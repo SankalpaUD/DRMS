@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import GAuth from '../components/GAuth';
+import { useDispatch, useSelector } from 'react-redux';
+import { loginStart, loginSuccess, loginFailure } from '../redux/user/userSlice';
 
 export default function Login() {
   const [formData, setFormData] = useState({});
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const { loading, error } = useSelector(state => state.user);
+  const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
@@ -19,13 +21,12 @@ export default function Login() {
       ...formData,
       [e.target.id]: e.target.value.trim(),
     });
-    setError(null);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      setLoading(true);
+      dispatch(loginStart());
       const response = await fetch('/api/auth/login', {
         method: 'POST',
         headers: {
@@ -35,23 +36,20 @@ export default function Login() {
       });
       const data = await response.json();
       if (data.success === false) {
-        setError(data.message);
-      } else {
-        setError(null);
-        if (response.ok) {
-          navigate('/home');
-        }
+        dispatch(loginFailure(data.message));
+      }
+      if (response.ok) {
+        dispatch(loginSuccess(data));
+        navigate('/home');
       }
     } catch (error) {
-      setError(error.message);
-    } finally {
-      setLoading(false);
+      dispatch(loginFailure(error.message));
     }
   };
 
   return (
-    <div className="min-h-screen flex justify-center bg-slate-200">
-      <div className="bg-white/80 backdrop-blur-lg p-8 rounded-3xl shadow-2xl w-11/12 md:w-1/2 lg:w-1/3 h-[500px] mt-20">
+    <div className="min-h-screen flex justify-center items-start bg-slate-200">
+      <div className="bg-white/80 backdrop-blur-lg px-8 py-6 rounded-3xl shadow-2xl w-11/12 md:w-1/2 lg:w-1/3 mt-20">
         <h2 className="text-3xl font-bold mb-7 text-center text-gray-800">
           Login
         </h2>
@@ -115,10 +113,10 @@ export default function Login() {
           </div>
           <GAuth />
           {error && (
-            <p className="text-red-500 text-sm text-center mt-4 bg-red-100 py-1 rounded-md">{error}</p>
+            <p className="text-red-500 text-sm text-center mt-5 bg-red-100 rounded-md py-1 ">{error}</p>
           )}
         </form>
-        <p className="mt-3 text-center text-sm text-gray-600">
+        <p className="mt-4 text-center text-sm text-gray-600">
           Don't have an account?{' '}
           <Link
             to="/signup"
