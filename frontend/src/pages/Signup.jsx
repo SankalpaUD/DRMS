@@ -62,8 +62,8 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen flex justify-center bg-slate-200">
-      <div className="bg-white/80 backdrop-blur-lg p-8 rounded-3xl shadow-2xl w-11/12 md:w-1/2 lg:w-1/3 h-[725px] mt-20">
+    <div className="min-h-screen flex justify-center items-start bg-slate-200">
+      <div className="bg-white/80 backdrop-blur-lg px-8 py-6 rounded-3xl shadow-2xl w-11/12 md:w-1/2 lg:w-1/3 mt-20">
         <h2 className="text-3xl font-bold mb-7 text-center text-gray-800">
           Sign Up
         </h2>
@@ -170,7 +170,7 @@ export default function Signup() {
           </div>
           <GAuth />
           {error && (
-            <p className="text-red-500 text-sm text-center mt-4 bg-red-100 py-1 rounded-md">{error}</p>
+            <p className="text-red-500 text-sm text-center mt-5 bg-red-100 py-1 rounded-md">{error}</p>
           )}
         </form>
         <p className="mt-3 text-center text-sm text-gray-600">
