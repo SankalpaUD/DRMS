@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRoute from './routes/user.route.js';
 import authRoute from './routes/auth.route.js';
+import cookieParser from 'cookie-parser';
 
 dotenv.config();
 
@@ -17,6 +18,8 @@ mongoose.connect(process.env.MONGODB_URI)
 const app = express();
 
 app.use(express.json());
+
+app.use(cookieParser());
 
 app.listen(5000, () => {
     console.log('Server is running on http://localhost:5000');
