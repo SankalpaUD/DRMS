@@ -1,151 +1,269 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
+import { FaBars, FaTimes } from 'react-icons/fa';
+import Sidebar from './Sidebar';
 import logo from '../assets/logo.png';
+import { logoutSuccess } from '../redux/user/userSlice';
 
-const Navbar = () => {
+const Navbar = ({ toggleSidebar }) => {
   const location = useLocation();
+  const { currentUser } = useSelector((state) => state.user);
   const [activeLink, setActiveLink] = useState(location.pathname);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isSidebarOpen1, setIsSidebarOpen1] = useState(false);
+  const [isSidebarOpen2, setIsSidebarOpen2] = useState(false);
+  const dropdownRef = useRef(null);
+  const dispatch = useDispatch();
+
+  const handleLogout = async () => {
+    try {
+      const res = await fetch('/api/auth/logout', {
+        method: 'POST',
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        console.log(data.message);
+      } else {
+        dispatch(logoutSuccess());
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   useEffect(() => {
     setActiveLink(location.pathname);
   }, [location.pathname]);
 
-  const handleLinkClick = (path) => {
-    setActiveLink(path);
-    setIsMenuOpen(false); // Close the menu when a link is clicked
-  };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsDropdownOpen(false);
+      }
+    };
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [dropdownRef]);
+
+  const handleLinkClick = (path) => setActiveLink(path);
+  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
+  const toggleSidebar1 = () => setIsSidebarOpen1((prev) => !prev);
+  const toggleSidebar2 = () => setIsSidebarOpen2((prev) => !prev);
 
   return (
-    <div className="w-full min-h-[65px] bg-indigo-500 shadow-lg flex justify-center items-center">
-      <div className="w-full h-auto px-8 md:px-16 flex justify-between items-center gap-14">
-        {/* Logo Section */}
-        <div className="flex justify-start items-center">
+    <div className="relative">
+      {/* Navbar Container */}
+      <div className="w-full min-h-[65px] bg-indigo-500 shadow-lg flex justify-between items-center px-4 md:px-8 fixed z-10">
+        {/* Logo & Sidebar Toggle */}
+        <div className="flex items-center gap-4">
+          <button className="text-white hidden md:block" onClick={() => { toggleSidebar2(); toggleSidebar(); }}
+          >
+            <FaBars size={28} />
+          </button>
+          <button className="text-white md:hidden" onClick={toggleSidebar1}>
+            {isSidebarOpen1 ? <FaTimes size={24} /> : <FaBars size={24} />}
+          </button>
           <Link to="/home" className="flex items-center" onClick={() => handleLinkClick('/home')}>
-            <img src={logo} alt="logo" className="w-10 h-10" />
-            <div className="text-white text-lg md:text-2xl font-extrabold whitespace-nowrap overflow-hidden text-ellipsis tracking-wide uppercase ml-1">
+            <img src={logo} alt="logo" className="w-8 h-8" />
+            <div className="text-white text-lg md:text-2xl font-extrabold tracking-wide uppercase ml-1 md:truncate md:max-w-[100px] lg:max-w-[250px]">
               Resource<span className="text-yellow-300">Flow</span>
             </div>
           </Link>
         </div>
 
-        {/* Navigation Links for Larger Screens */}
-        <div className="hidden md:flex justify-end items-center gap-4 flex-wrap">
-          <div className="flex justify-start items-center gap-4 md:gap-14">
+        {/* Desktop Navigation Links & Avatar */}
+        <div className="hidden md:flex items-center gap-6">
+          <div className="flex items-center gap-8">
             <Link
               to="/home"
-              className={`text-base font-medium transition duration-500 hover:text-yellow-300 ${activeLink === '/home' ? 'text-yellow-300' : 'text-white'}`}
+              className={`text-base font-medium transition duration-500 hover:text-yellow-300 ${
+                activeLink === '/home' ? 'text-yellow-300' : 'text-white'
+              }`}
               onClick={() => handleLinkClick('/home')}
             >
               Home
             </Link>
             <Link
               to="/resources"
-              className={`text-base font-medium transition duration-500 hover:text-yellow-300 ${activeLink === '/resources' ? 'text-yellow-300' : 'text-white'}`}
+              className={`text-base font-medium transition duration-500 hover:text-yellow-300 ${
+                activeLink === '/resources' ? 'text-yellow-300' : 'text-white'
+              }`}
               onClick={() => handleLinkClick('/resources')}
             >
               Resources
             </Link>
             <Link
               to="/bookings"
-              className={`text-base font-medium transition duration-500 hover:text-yellow-300 ${activeLink === '/bookings' ? 'text-yellow-300' : 'text-white'}`}
+              className={`text-base font-medium transition duration-500 hover:text-yellow-300 ${
+                activeLink === '/bookings' ? 'text-yellow-300' : 'text-white'
+              }`}
               onClick={() => handleLinkClick('/bookings')}
             >
               Bookings
             </Link>
             <Link
               to="/user-guide"
-              className={`text-base whitespace-nowrap font-medium transition duration-500 hover:text-yellow-300 mr-6 ${activeLink === '/user-guide' ? 'text-yellow-300' : 'text-white'}`}
+              className={`text-base font-medium transition duration-500 hover:text-yellow-300 ${
+                activeLink === '/user-guide' ? 'text-yellow-300' : 'text-white'
+              }`}
               onClick={() => handleLinkClick('/user-guide')}
             >
               User Guide
             </Link>
           </div>
-          <div className="flex justify-start items-center gap-4">
-            <Link
-              to="/signup"
-              className={`w-28 mb-2 mt-2 text-center px-5 py-2 border border-white text-base font-medium rounded hover:bg-white hover:text-blue-500 transition duration-500 ${
-                activeLink === '/signup' ? 'text-blue-500 bg-white' : 'text-white'
-              }`}
-              onClick={() => handleLinkClick('/signup')}
-            >
-              Sign Up
-            </Link>
-            <Link
-              to="/login"
-              className={`w-28 mb-2 mt-2 text-center px-5 py-2 bg-white text-blue-500 text-base font-medium rounded hover:bg-gray-200 transition duration-500 ${
-                activeLink === '/login' ? 'text-blue-500 bg-white' : 'text-blue'
-              }`}
-              onClick={() => handleLinkClick('/login')}
-            >
-              Login
-            </Link>
-          </div>
-        </div>
 
-        {/* Hamburger Menu Button for Smaller Screens */}
-        <div className="md:hidden flex items-center">
-          <button className="text-white" onClick={toggleMenu}>
-            Menu
-          </button>
+          {/* Profile or Auth Buttons */}
+          {currentUser ? (
+            <div className="relative">
+              <img
+                src={currentUser.avatar}
+                alt="avatar"
+                className="w-10 h-10 rounded-full cursor-pointer object-cover"
+                style={{ minWidth: '36px', minHeight: '36px' }}
+                onClick={toggleDropdown}
+              />
+              {isDropdownOpen && (
+                <div
+                  ref={dropdownRef}
+                  className="absolute right-0 mt-2 bg-white shadow-lg rounded-lg min-w-max z-20"
+                >
+                  <p className="px-4 py-2 border-b text-gray-800 font-semibold">
+                    {currentUser.name}
+                  </p>
+                  <Link
+                    to="/profile"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
+                  >
+                    Profile
+                  </Link>
+                  <Link
+                    to="/settings"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
+                  >
+                    Settings
+                  </Link>
+                  <Link
+                    to="/home"
+                    className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
+                    onClick={handleLogout}
+                  >
+                    Logout
+                  </Link>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="flex gap-4">
+              <Link
+                to="/signup"
+                className="px-5 py-2 border border-white text-white rounded hover:bg-white hover:text-blue-500 transition duration-500 whitespace-nowrap"
+                onClick={() => handleLinkClick('/signup')}
+              >
+                Sign Up
+              </Link>
+              <Link
+                to="/login"
+                className="px-5 py-2 bg-white text-blue-500 rounded hover:bg-gray-200 transition duration-500"
+                onClick={() => handleLinkClick('/login')}
+              >
+                Login
+              </Link>
+            </div>
+          )}
         </div>
       </div>
 
-      {/* Dropdown Menu for Smaller Screens */}
-      {isMenuOpen && (
-        <div className="md:hidden flex flex-col items-center bg-indigo-500 w-full py-2 transition duration-300">
+      {/* Mobile Sidebar */}
+      {isSidebarOpen1 && (
+        <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg z-20 mt-[65px]">
           <Link
             to="/home"
-            className={`text-base font-medium transition duration-500 hover:text-yellow-300 ${activeLink === '/home' ? 'text-yellow-300' : 'text-white'}`}
-            onClick={() => handleLinkClick('/home')}
+            className="block px-6 py-3 text-black hover:bg-slate-200"
+            onClick={toggleSidebar1}
           >
             Home
           </Link>
+          <hr />
           <Link
             to="/resources"
-            className={`text-base font-medium transition duration-500 hover:text-yellow-300 ${activeLink === '/resources' ? 'text-yellow-300' : 'text-white'}`}
-            onClick={() => handleLinkClick('/resources')}
+            className="block px-6 py-3 text-black hover:bg-slate-200"
+            onClick={toggleSidebar1}
           >
             Resources
           </Link>
+          <hr />
           <Link
             to="/bookings"
-            className={`text-base font-medium transition duration-500 hover:text-yellow-300 ${activeLink === '/bookings' ? 'text-yellow-300' : 'text-white'}`}
-            onClick={() => handleLinkClick('/bookings')}
+            className="block px-6 py-3 text-black hover:bg-slate-200"
+            onClick={toggleSidebar1}
           >
             Bookings
           </Link>
+          <hr />
           <Link
             to="/user-guide"
-            className={`text-base font-medium transition duration-500 hover:text-yellow-300 ${activeLink === '/user-guide' ? 'text-yellow-300' : 'text-white'}`}
-            onClick={() => handleLinkClick('/user-guide')}
+            className="block px-6 py-3 text-black hover:bg-slate-200"
+            onClick={toggleSidebar1}
           >
             User Guide
           </Link>
-          <Link
-            to="/signup"
-            className={`w-28 mt-1 text-center px-5 py-2 border border-white text-base font-medium rounded hover:bg-white hover:text-blue-500 transition duration-500 ${
-              activeLink === '/signup' ? 'text-blue-500 bg-white' : 'text-white'
-            }`}
-            onClick={() => handleLinkClick('/signup')}
-          >
-            Sign Up
-          </Link>
-          <Link
-            to="/login"
-            className={`w-28 mt-2 text-center px-5 py-2 bg-white text-blue-500 text-base font-medium rounded hover:bg-gray-200 transition duration-500 ${
-              activeLink === '/login' ? 'text-blue-500 bg-white' : 'text-blue'
-            }`}
-            onClick={() => handleLinkClick('/login')}
-          >
-            Login
-          </Link>
+          <hr />
+          {currentUser ? (
+            <>
+              <Link
+                to="/profile"
+                className="block px-6 py-3 text-black hover:bg-slate-200"
+                onClick={toggleSidebar1}
+              >
+                Profile
+              </Link>
+              <hr />
+              <Link
+                to="/settings"
+                className="block px-6 py-3 text-black hover:bg-slate-200"
+                onClick={toggleSidebar1}
+              >
+                Settings
+              </Link>
+              <hr />
+              <Link
+                to="/logout"
+                className="block px-6 py-3 text-black hover:bg-slate-200"
+                onClick={toggleSidebar1}
+              >
+                Logout
+              </Link>
+              <hr />
+            </>
+          ) : (
+            <>
+              <Link
+                to="/signup"
+                className="block px-6 py-3 text-black hover:bg-slate-200"
+                onClick={toggleSidebar1}
+              >
+                Sign Up
+              </Link>
+              <hr />
+              <Link
+                to="/login"
+                className="block px-6 py-3 text-black hover:bg-slate-200"
+                onClick={toggleSidebar1}
+              >
+                Login
+              </Link>
+              <hr />
+            </>
+          )}
         </div>
       )}
+
+      {/* Sidebar for larger screens */}
+      <Sidebar isOpen={isSidebarOpen2} toggleSidebar={toggleSidebar2} />
     </div>
   );
 };

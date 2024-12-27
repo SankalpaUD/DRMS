@@ -44,15 +44,15 @@ export const login = async (req, res, next) =>{
         const isMatch = bcryptjs.compareSync(password, user.password);
 
         if (!isMatch) {
-            return next(errorHandler(400, 'Invalid password'));
+            return next(errorHandler(400, 'Wrong credentials!'));
         }
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
 
         const { password: userPassword, ...userWithoutPassword } = user._doc;
 
         res
+            .cookie('access_token', token, { httpOnly: true })
             .status(200)
-            .cookie('token', token, { httpOnly: true })
             .json(userWithoutPassword);
     } catch (error) {
         next(error);
@@ -69,7 +69,7 @@ export const google = async (req, res, next) => {
 
             return res
                 .status(200)
-                .cookie('token', token, { httpOnly: true })
+                .cookie('access_token', token, { httpOnly: true })
                 .json(userWithoutPassword);
         }else{
             const generatedPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
@@ -85,10 +85,19 @@ export const google = async (req, res, next) => {
             const { password: userPassword, ...userWithoutPassword } = newUser._doc;
             return res
                 .status(200)
-                .cookie('token', token, { httpOnly: true })
+                .cookie('access_token', token, { httpOnly: true })
                 .json(userWithoutPassword);           
         }
     } catch (error) {
         next(error);
     }
 }
+
+export const logout = async (req, res, next) => {
+  try {
+    res.clearCookie('access_token');
+    res.status(200).json('User has been logged out!');
+  } catch (error) {
+    next(error);
+  }
+};
