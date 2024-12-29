@@ -3,7 +3,7 @@ import React from 'react';
 export default function Home() {
   return (
     <div className="bg-slate-200 min-h-screen flex flex-col items-center">
-      <header className="bg-indigo-400 py-4 shadow-lg mt-20 transform hover:scale-105 transition-transform duration-300 rounded-lg">
+      <header className="bg-indigo-400 py-4 shadow-lg mt-10 transform hover:scale-105 transition-transform duration-300 rounded-lg">
         <h1 className="text-white text-3xl font-bold text-center">Welcome to ResourceFlow</h1>
       </header>
       <main className="flex flex-col items-center mt-8">

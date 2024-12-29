@@ -2,9 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { FaBars, FaTimes } from 'react-icons/fa';
-import Sidebar from './Sidebar';
-import logo from '../assets/logo.png';
 import { logoutSuccess } from '../redux/user/userSlice';
+import Sidebar from './SideBar';
+import logo from '../assets/logo.png';
 
 const Navbar = ({ toggleSidebar }) => {
   const location = useLocation();
@@ -14,6 +14,7 @@ const Navbar = ({ toggleSidebar }) => {
   const [isSidebarOpen1, setIsSidebarOpen1] = useState(false);
   const [isSidebarOpen2, setIsSidebarOpen2] = useState(false);
   const dropdownRef = useRef(null);
+  const profileImageRef = useRef(null);
   const dispatch = useDispatch();
 
   const handleLogout = async () => {
@@ -38,7 +39,12 @@ const Navbar = ({ toggleSidebar }) => {
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        profileImageRef.current &&
+        !profileImageRef.current.contains(event.target)
+      ) {
         setIsDropdownOpen(false);
       }
     };
@@ -47,10 +53,18 @@ const Navbar = ({ toggleSidebar }) => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [dropdownRef]);
+  }, [dropdownRef, profileImageRef]);
 
-  const handleLinkClick = (path) => setActiveLink(path);
-  const toggleDropdown = () => setIsDropdownOpen((prev) => !prev);
+  const handleLinkClick = (path) => {
+    setActiveLink(path);
+    setIsDropdownOpen(false); // Hide dropdown when a link is clicked
+  };
+
+  const toggleDropdown = (event) => {
+    event.stopPropagation(); // Stop the event from propagating to the document
+    setIsDropdownOpen((prev) => !prev);
+  };
+
   const toggleSidebar1 = () => setIsSidebarOpen1((prev) => !prev);
   const toggleSidebar2 = () => setIsSidebarOpen2((prev) => !prev);
 
@@ -60,8 +74,7 @@ const Navbar = ({ toggleSidebar }) => {
       <div className="w-full min-h-[65px] bg-indigo-500 shadow-lg flex justify-between items-center px-4 md:px-8 fixed z-10">
         {/* Logo & Sidebar Toggle */}
         <div className="flex items-center gap-4">
-          <button className="text-white hidden md:block" onClick={() => { toggleSidebar2(); toggleSidebar(); }}
-          >
+          <button className="text-white hidden md:block" onClick={() => { toggleSidebar2(); toggleSidebar(); }}>
             <FaBars size={28} />
           </button>
           <button className="text-white md:hidden" onClick={toggleSidebar1}>
@@ -120,6 +133,7 @@ const Navbar = ({ toggleSidebar }) => {
           {currentUser ? (
             <div className="relative">
               <img
+                ref={profileImageRef}
                 src={currentUser.avatar}
                 alt="avatar"
                 className="w-10 h-10 rounded-full cursor-pointer object-cover"
@@ -137,19 +151,24 @@ const Navbar = ({ toggleSidebar }) => {
                   <Link
                     to="/profile"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
+                    onClick={() => handleLinkClick('/profile')}
                   >
                     Profile
                   </Link>
                   <Link
                     to="/settings"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
+                    onClick={() => handleLinkClick('/settings')}
                   >
                     Settings
                   </Link>
                   <Link
                     to="/home"
                     className="block px-4 py-2 text-gray-800 hover:bg-gray-200"
-                    onClick={handleLogout}
+                    onClick={() => {
+                      handleLogout();
+                      setIsDropdownOpen(false); // Hide dropdown when logout is clicked
+                    }}
                   >
                     Logout
                   </Link>
