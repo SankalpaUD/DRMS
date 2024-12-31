@@ -3,7 +3,6 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import userRoute from './routes/user.route.js';
 import authRoute from './routes/auth.route.js';
-import adminRoute from './routes/admin.route.js';
 import resourceRoute from './routes/resource.route.js';
 import acceptanceRoute from './routes/acceptance.route.js';
 import cookieParser from 'cookie-parser';
@@ -25,7 +24,6 @@ app.use(cookieParser());
 
 app.use('/api/user', userRoute);
 app.use('/api/auth', authRoute);
-app.use('/api/admin', adminRoute);
 app.use('/api/resource', resourceRoute);
 app.use('/api/acceptance', acceptanceRoute);
 

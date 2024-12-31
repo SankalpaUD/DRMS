@@ -1,5 +1,4 @@
 import User from '../models/user.model.js';
-import Admin from '../models/admin.model.js'; // Import Admin model
 import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
 import jwt from 'jsonwebtoken';
@@ -35,14 +34,8 @@ export const login = async (req, res, next) => {
   }
 
   try {
-    // First, try to find the user in the User collection
-    let user = await User.findOne({ email });
-
-    // If the user is not found, try to find the admin in the Admin collection
-    if (!user) {
-      user = await Admin.findOne({ email });
-    }
-
+    const user = await User.findOne({ email });
+  
     if (!user) {
       return next(errorHandler(404, 'User not found'));
     }
@@ -53,12 +46,15 @@ export const login = async (req, res, next) => {
       return next(errorHandler(400, 'Wrong credentials!'));
     }
 
-    const token = jwt.sign({ id: user._id, role: user.role || 'User' }, process.env.JWT_SECRET);
+    const token = jwt.sign({ id: user._id, role: user.role}, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     const { password: userPassword, ...userWithoutPassword } = user._doc;
 
     res
-      .cookie('access_token', token, { httpOnly: true })
+      .cookie('access_token', token, { 
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+      })
       .status(200)
       .json(userWithoutPassword);
   } catch (error) {
@@ -103,7 +99,7 @@ export const google = async (req, res, next) => {
 export const getCurrentUser = async (req, res, next) => {
   try {
     const userId = req.user.id;
-    const user = await User.findById(userId) || await Admin.findById(userId);
+    const user = await User.findById(userId);
 
     if (!user) {
       return next(errorHandler(404, 'User not found'));
@@ -117,8 +113,10 @@ export const getCurrentUser = async (req, res, next) => {
 
 export const logout = async (req, res, next) => {
   try {
-    res.clearCookie('access_token');
-    res.status(200).json('User has been logged out!');
+    res
+    .clearCookie('access_token')
+    .status(200)
+    .json('User has been logged out!');
   } catch (error) {
     next(error);
   }

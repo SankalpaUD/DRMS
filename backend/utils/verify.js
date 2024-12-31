@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken';
-import { errorHandler } from './error.js';
 import User from '../models/user.model.js';
-import Admin from '../models/admin.model.js';
+import { errorHandler } from './error.js';
 
 export const verify = (roles = []) => {
   return async (req, res, next) => {
@@ -13,7 +12,7 @@ export const verify = (roles = []) => {
       if (err) return next(errorHandler(403, 'Forbidden'));
 
       try {
-        const user = await User.findById(decoded.id) || await Admin.findById(decoded.id);
+        const user = await User.findById(decoded.id);
         if (!user) return next(errorHandler(404, 'User not found'));
 
         req.user = user;

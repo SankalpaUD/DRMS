@@ -33,30 +33,33 @@ const userSchema = new mongoose.Schema({
     type: String,
     trim: true,
   },
+  idDetails: {
+    idNumber: String,
+    idName: String,
+  },
   role: {
     type: String,
-    enum: ['user', 'student', 'staff'],
+    enum: ['user', 'student', 'staff', 'Acceptance Admin', 'Super Admin', 'Resource Admin'],
     default: 'user',
   },
   upgradeRequestStatus: {
     type: String,
-    enum: ['none', 'pending', 'approved', 'rejected'],
-    default: 'none',
+    enum: ['pending', 'approved', 'rejected'],
+    default: 'pending',
   },
-  idDetails: {
-    idNumber: {
-      type: String,
-      trim: true,
-    },
-    idName: {
-      type: String,
-      trim: true,
-    },
+  lastLogin: {
+    type: Date,
   },
-  
-}, {
-  timestamps: true,
-});
+  loginIP: {
+    type: String,
+  },
+  bookings: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Booking',
+    },
+  ],
+}, { timestamps: true });
 
 const User = mongoose.model('User', userSchema);
 

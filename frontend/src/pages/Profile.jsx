@@ -6,7 +6,7 @@ const Profile = () => {
   const { currentUser } = useSelector((state) => state.user);
 
   // Parse idDetails
-  const idDetails = currentUser.idDetails ? JSON.parse(currentUser.idDetails) : {};
+  const idDetails = currentUser.idDetails || {};
 
   return (
     <div className="flex flex-col p-5 font-sans bg-slate-200 min-h-screen w-full items-center">

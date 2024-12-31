@@ -5,7 +5,7 @@ export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true); // Add loading state
+  const [loading, setLoading] = useState(true); 
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -15,7 +15,7 @@ export const AuthProvider = ({ children }) => {
       } catch (error) {
         console.error('Failed to fetch user data', error);
       } finally {
-        setLoading(false); // Set loading to false after fetching user data
+        setLoading(false); 
       }
     };
 
@@ -28,3 +28,6 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+// Add default export
+export default AuthProvider;
