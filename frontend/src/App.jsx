@@ -16,6 +16,8 @@ import UpgradeRequestForm from './pages/UpgradeRequestForm';
 import AdminUpgradeRequests from './pages/AdminUpgradeRequests';
 import UpgradeDetails from './pages/UpgradeDetails';
 import Landing from './pages/Landing';
+import Footer from './components/Footer';
+
 
 function MainApp() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -70,6 +72,7 @@ export default function App() {
     <AuthProvider>
       <Router>
         <MainApp />
+        <Footer/>
       </Router>
     </AuthProvider>
   );
