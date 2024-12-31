@@ -1,38 +1,37 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { AiFillGoogleCircle } from 'react-icons/ai';
 import { GoogleAuthProvider, getAuth, signInWithPopup } from 'firebase/auth';
 import { app } from '../firebase';
 import { useDispatch } from 'react-redux';
-import { loginSuccess } from '../redux/user/userSlice';
+import { loginSuccess, loginFailure } from '../redux/user/userSlice';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
+import axios from 'axios';
 
 export default function GAuth() {
   const auth = getAuth(app);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { setUser } = useContext(AuthContext);
+
   const handleGoogleLogin = async () => {
     const provider = new GoogleAuthProvider();
     provider.setCustomParameters({ prompt: 'select_account' });
     try {
       const resultFromGoogle = await signInWithPopup(auth, provider);
-      const response = await fetch('/api/auth/google', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: resultFromGoogle.user.displayName,
-          email: resultFromGoogle.user.email,
-          googlePhotoUrl: resultFromGoogle.user.photoURL
-        }),
+      const response = await axios.post('/api/auth/google', {
+        name: resultFromGoogle.user.displayName,
+        email: resultFromGoogle.user.email,
+        googlePhotoUrl: resultFromGoogle.user.photoURL,
       });
-      const data = await response.json();
-      if (response.ok) {
-        dispatch(loginSuccess(data));
-        navigate('/home');
-      }
+
+      const userData = response.data;
+      setUser(userData);
+      dispatch(loginSuccess(userData));
+      navigate('/home');
     } catch (error) {
-      console.log(error);
+      dispatch(loginFailure(error.message));
+      console.error('Google login failed', error);
     }
   };
 

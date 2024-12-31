@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FaEye, FaEyeSlash } from 'react-icons/fa';
 import GAuth from '../components/GAuth';
 import { useDispatch, useSelector } from 'react-redux';
 import { loginStart, loginSuccess, loginFailure } from '../redux/user/userSlice';
+import axios from 'axios';
+import { AuthContext } from '../context/AuthContext'; // Import AuthContext
 
 export default function Login() {
   const [formData, setFormData] = useState({});
@@ -11,6 +13,7 @@ export default function Login() {
   const dispatch = useDispatch();
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { setUser } = useContext(AuthContext); // Use setUser from AuthContext
 
   const togglePassword = () => {
     setShowPassword(!showPassword);
@@ -25,25 +28,19 @@ export default function Login() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    dispatch(loginStart());
     try {
-      dispatch(loginStart());
-      const response = await fetch('/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
-      const data = await response.json();
-      if (data.success === false) {
-        dispatch(loginFailure(data.message));
-      }
-      if (response.ok) {
-        dispatch(loginSuccess(data));
+      const response = await axios.post('/api/auth/login', formData);
+      if (response.status === 200) {
+        const userResponse = await axios.get('/api/auth/me');
+        setUser(userResponse.data);
+        dispatch(loginSuccess(userResponse.data));
         navigate('/home');
+      } else {
+        dispatch(loginFailure('Login failed'));
       }
     } catch (error) {
-      dispatch(loginFailure(error.message));
+      dispatch(loginFailure(error.response?.data?.message || 'Login failed'));
     }
   };
 
