@@ -23,15 +23,25 @@ const upgradeRequestSchema = new mongoose.Schema({
       trim: true,
     },
   },
+  idFrontImageUrl: {
+    type: String,
+    required: true,
+  },
+  idBackImageUrl: {
+    type: String,
+    required: true,
+  },
   status: {
     type: String,
     enum: ['pending', 'approved', 'rejected'],
     default: 'pending',
   },
-}, {
-  timestamps: true,
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
-const UpgradeUser = mongoose.model('UpgradeRequest', upgradeRequestSchema);
+const UpgradeRequest = mongoose.model('UpgradeRequest', upgradeRequestSchema);
 
-export default UpgradeUser;
+export default UpgradeRequest;

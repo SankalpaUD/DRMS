@@ -4,15 +4,6 @@ import path from 'path';
 // Set storage engine to memory storage
 const storage = multer.memoryStorage();
 
-// Initialize upload
-const upload = multer({
-  storage: storage,
-  limits: { fileSize: 1000000 }, // Limit file size to 1MB
-  fileFilter: (req, file, cb) => {
-    checkFileType(file, cb);
-  },
-});
-
 // Check file type
 function checkFileType(file, cb) {
   // Allowed ext
@@ -28,5 +19,14 @@ function checkFileType(file, cb) {
     cb('Error: Images Only!');
   }
 }
+
+// Initialize upload
+const upload = multer({
+  storage: storage,
+  limits: { fileSize: 2000000 }, // Limit file size to 2MB
+  fileFilter: (req, file, cb) => {
+    checkFileType(file, cb);
+  },
+});
 
 export default upload;

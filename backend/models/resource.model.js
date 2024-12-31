@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
 
 const resourceSchema = new mongoose.Schema({
   name: {
@@ -11,6 +11,10 @@ const resourceSchema = new mongoose.Schema({
     required: true,
     trim: true,
   },
+  imageUrl: {
+    type: [String],
+    trim: true,
+  },
   description: {
     type: String,
     trim: true,
@@ -19,17 +23,14 @@ const resourceSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
-    required: true,
+  createdAt: {
+    type: Date,
+    default: Date.now,
   },
-  updatedBy: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+  updatedAt: {
+    type: Date,
+    default: Date.now,
   },
-}, {
-  timestamps: true,
 });
 
 const Resource = mongoose.model('Resource', resourceSchema);

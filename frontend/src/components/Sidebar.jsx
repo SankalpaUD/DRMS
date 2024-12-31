@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { FaUser, FaCalendarAlt, FaCog, FaSignOutAlt } from 'react-icons/fa';
+import { FaUser, FaCalendarAlt, FaCog, FaSignOutAlt, FaPlus, FaArrowUp } from 'react-icons/fa';
 import { logoutSuccess } from '../redux/user/userSlice';
 
-const Sidebar = ({ isOpen, toggleSidebar }) => {
+const Sidebar = ({ isOpen }) => {
   const { currentUser } = useSelector(state => state.user);
   const dispatch = useDispatch();
   const location = useLocation();
@@ -51,6 +51,22 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         >
           <FaUser className="mr-2" /> Profile
         </Link>
+        {currentUser && (currentUser.role === 'Super Admin' || currentUser.role === 'Resource Admin') && (
+          <Link 
+            to="/add-resource" 
+            className={getLinkClass('/add-resource')}
+          >
+            <FaPlus className="mr-2" /> Add Resource
+          </Link>
+        )}
+        {currentUser && currentUser.role === 'Acceptance Admin' && (
+          <Link 
+            to="/admin/upgrade-requests" 
+            className={getLinkClass('/admin/upgrade-requests')}
+          >
+            <FaArrowUp className="mr-2" /> Upgrade Requests
+          </Link>
+        )}
         <Link 
           to="/bookings" 
           className={getLinkClass('/bookings')}
@@ -72,6 +88,14 @@ const Sidebar = ({ isOpen, toggleSidebar }) => {
         >
           <FaSignOutAlt className="mr-2" /> Logout
         </Link>
+        {currentUser && currentUser.role === 'user' && (
+          <Link 
+            to="/upgrade-request" 
+            className={getLinkClass('/upgrade-request')}
+          >
+            <FaArrowUp className="mr-2" /> Upgrade Account
+          </Link>
+        )}
       </nav>
     </div>
   );

@@ -2,8 +2,8 @@ import React from 'react';
 
 export default function Userguide() {
   return (
-    <div className="p-8 bg-slate-100 min-h-screen">
-      <h1 className="text-4xl font-extrabold mb-10 mt-20 text-gray-800 text-center">User Guide</h1>
+    <div className="p-8 bg-slate-200 min-h-screen">
+      <h1 className="text-4xl font-extrabold mb-10 text-gray-800 text-center">User Guide</h1>
       <div className="max-w-4xl mx-auto bg-white shadow-md rounded-lg p-6">
         {/* Introduction */}
         <section className="mb-8">
