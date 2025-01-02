@@ -17,6 +17,7 @@ import AdminUpgradeRequests from './pages/AdminUpgradeRequests';
 import UpgradeDetails from './pages/UpgradeDetails';
 import Landing from './pages/Landing';
 import Footer from './components/Footer';
+import ContactUs from './pages/ContactUs';
 
 
 function MainApp() {
@@ -42,6 +43,7 @@ function MainApp() {
 
             {/* Other Public Routes */}
             <Route path="/home" element={<Home />} />
+            <Route path="/ContactUs" element={<ContactUs />} />
             <Route path="/user-guide" element={<Userguide />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />

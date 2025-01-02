@@ -1,6 +1,10 @@
 import React from 'react';
+//import { handleContactUsClick ,ContactUs} from './ContactUs';
+import { Link } from 'react-router-dom';
 
 export default function Home() {
+  
+
   return (
     <div className="bg-slate-200 min-h-screen flex flex-col items-center">
       <header className="bg-indigo-400 py-4 shadow-lg mt-10 transform hover:scale-105 transition-transform duration-300 rounded-lg">
@@ -49,17 +53,14 @@ export default function Home() {
             "The real-time availability tracking feature is a game-changer. It has saved us so much time and effort." - John Smith, Staff Member
           </blockquote>
         </section>
-        <section className="bg-white p-8 rounded-3xl shadow-2xl w-11/12 md:w-3/4 lg:w-1/2 mt-8 transform hover:scale-105 transition-transform duration-300">
+        <section  className="bg-white p-8 rounded-3xl shadow-2xl w-11/12 md:w-3/4 lg:w-1/2 mt-8 transform hover:scale-105 transition-transform duration-300">
           <h2 className="text-2xl font-semibold mb-4">Contact Us</h2>
-          <p className="text-gray-700 mb-4">
+          <p className="text-gray-700 mb-4 hover:underline  hover:text-yellow-300 ">
+            <Link to ="/ContactUs">
             Have questions or need assistance? Get in touch with us:
+            </Link>
           </p>
-          <p className="text-gray-700">
-            Email: support@resourceflow.com
-          </p>
-          <p className="text-gray-700">
-            Phone: (123) 456-7890
-          </p>
+         
         </section>
       </main>
     </div>

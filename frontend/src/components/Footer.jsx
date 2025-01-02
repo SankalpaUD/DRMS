@@ -30,7 +30,7 @@ function Footer() {
             </div>
                 <div>
                     
-                    <p className="text-white hover:underline"><a href="mailto:contact@example.com">contact@example.com</a></p>
+                    <p className="text-white hover:underline"><a href="mailto:contact@example.com">contact@resourceflow.com</a></p>
                 </div>
              </div>
             </li>
