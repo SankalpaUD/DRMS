@@ -12,10 +12,15 @@ import Editprofile from './pages/EditProfile';
 import AddResource from './pages/AddResource'; 
 import AuthProvider from './context/AuthContext';
 import Resources from './pages/Resources';
+import Resource from './pages/Resource';
+import Bookings from './pages/Bookings';
 import UpgradeRequestForm from './pages/UpgradeRequestForm';
 import AdminUpgradeRequests from './pages/AdminUpgradeRequests';
 import UpgradeDetails from './pages/UpgradeDetails';
 import Landing from './pages/Landing';
+import Footer from './components/Footer';
+import ResourceRequestForm from './pages/ResourceRequestForm';
+import AdminResourceRequests from './pages/AdminResourceRequests';
 
 function MainApp() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -29,7 +34,7 @@ function MainApp() {
   const isLandingPage = location.pathname === '/';
 
   return (
-    <div className="flex">
+    <div className="flex flex-col min-h-screen">
       {!isLandingPage && <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />}
       <div className="flex-1 transition-all duration-300">
         {!isLandingPage && <Navbar toggleSidebar={toggleSidebar} />}
@@ -44,10 +49,13 @@ function MainApp() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route path="/resources" element={<Resources />} />
+            <Route path="/resource/:id" element={<Resource />} />
+            <Route path="/request/:resourceId" element={<ResourceRequestForm />} />
             <Route path="/upgrade-request" element={<UpgradeRequestForm />} />
+            <Route path="/bookings" element={<Bookings />} />
 
             {/* Protected Routes */}
-            <Route element={<PrivateRoute roles={['user', 'student', 'staff']} />}>
+            <Route element={<PrivateRoute />}>
               <Route path="/profile" element={<Profile />} />
               <Route path="/edit-profile" element={<Editprofile />} />
             </Route>
@@ -57,10 +65,12 @@ function MainApp() {
             <Route element={<PrivateRoute roles={['Acceptance Admin']} />}>
               <Route path="/admin/upgrade-requests" element={<AdminUpgradeRequests />} />
               <Route path="/admin/upgrade-requests/:requestId" element={<UpgradeDetails />} />
+              <Route path="/admin/resource-requests" element={<AdminResourceRequests />} />
             </Route>
           </Routes>
         </div>
       </div>
+      {location.pathname === '/home' && <Footer />}
     </div>
   );
 }

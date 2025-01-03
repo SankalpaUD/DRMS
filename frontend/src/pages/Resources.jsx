@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Link } from 'react-router-dom';
 
 const Resources = () => {
   const [resources, setResources] = useState([]);
@@ -31,7 +32,7 @@ const Resources = () => {
         resources.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-7 gap-6">
             {resources.map(resource => (
-              <div key={resource.id} className="flex flex-col items-start gap-4 p-4 bg-white rounded-xl shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 border border-black">
+              <Link to={`/resource/${resource._id}`} key={resource._id} className="flex flex-col items-start gap-4 p-4 bg-white rounded-xl shadow-xl hover:shadow-2xl transition-all transform hover:scale-105 border border-black">
                 {resource.imageUrl && resource.imageUrl.length > 0 && (
                   <img
                     src={resource.imageUrl[0]}
@@ -43,7 +44,7 @@ const Resources = () => {
                   <h2 className="text-slate-700 font-bold text-sm">{resource.name}</h2>
                   <p className="text-slate-500 text-xs">{resource.description}</p>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         ) : (

@@ -1,66 +1,88 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { FaCogs, FaCalendarAlt } from 'react-icons/fa';
+import img from '../assets/img.png';
 
 export default function Home() {
   return (
-    <div className="bg-slate-200 min-h-screen flex flex-col items-center">
-      <header className="bg-indigo-400 py-4 shadow-lg mt-10 transform hover:scale-105 transition-transform duration-300 rounded-lg">
-        <h1 className="text-white text-3xl font-bold text-center">Welcome to ResourceFlow</h1>
-      </header>
-      <main className="flex flex-col items-center mt-8">
-        <section className="bg-white p-8 rounded-3xl shadow-2xl w-11/12 md:w-3/4 lg:w-1/2 transform hover:scale-105 transition-transform duration-300">
-          <h2 className="text-2xl font-semibold mb-4">Userguide Us</h2>
-          <p className="text-gray-700 mb-4">
-            ResourceFlow is a comprehensive resource management system designed to streamline the process of booking and managing resources within a department.
-          </p>
-          <p className="text-gray-700">
-            Our platform allows students, staff, and guests to easily request and manage resources, ensuring efficient and effective resource utilization.
-          </p>
-        </section>
-        <section className="bg-white p-8 rounded-3xl shadow-2xl w-11/12 md:w-3/4 lg:w-1/2 mt-8 transform hover:scale-105 transition-transform duration-300">
-          <h2 className="text-2xl font-semibold mb-4">Features</h2>
-          <ul className="list-disc list-inside text-gray-700">
-            <li>Easy resource booking</li>
-            <li>Real-time availability tracking</li>
-            <li>Automated approval workflows</li>
-            <li>Comprehensive reporting and analytics</li>
-          </ul>
-        </section>
-        <section className="bg-white p-8 rounded-3xl shadow-2xl w-11/12 md:w-3/4 lg:w-1/2 mt-8 transform hover:scale-105 transition-transform duration-300">
-          <h2 className="text-2xl font-semibold mb-4">How It Works</h2>
-          <p className="text-gray-700 mb-4">
-            ResourceFlow simplifies the resource management process with a few easy steps:
-          </p>
-          <ol className="list-decimal list-inside text-gray-700">
-            <li>Sign up and create an account.</li>
-            <li>Browse available resources and make a booking request.</li>
-            <li>Receive approval notifications and manage your bookings.</li>
-            <li>Access comprehensive reports and analytics for better resource planning.</li>
-          </ol>
-        </section>
-        <section className="bg-white p-8 rounded-3xl shadow-2xl w-11/12 md:w-3/4 lg:w-1/2 mt-8 transform hover:scale-105 transition-transform duration-300">
-          <h2 className="text-2xl font-semibold mb-4">Testimonials</h2>
-          <p className="text-gray-700 mb-4">
-            Hear what our users have to say Userguide ResourceFlow:
-          </p>
-          <blockquote className="text-gray-700 italic mb-4">
-            "ResourceFlow has revolutionized the way we manage our department's resources. It's user-friendly and efficient!" - Jane Doe, Department Head
-          </blockquote>
-          <blockquote className="text-gray-700 italic">
-            "The real-time availability tracking feature is a game-changer. It has saved us so much time and effort." - John Smith, Staff Member
-          </blockquote>
-        </section>
-        <section className="bg-white p-8 rounded-3xl shadow-2xl w-11/12 md:w-3/4 lg:w-1/2 mt-8 transform hover:scale-105 transition-transform duration-300">
-          <h2 className="text-2xl font-semibold mb-4">Contact Us</h2>
-          <p className="text-gray-700 mb-4">
-            Have questions or need assistance? Get in touch with us:
-          </p>
-          <p className="text-gray-700">
-            Email: support@resourceflow.com
-          </p>
-          <p className="text-gray-700">
-            Phone: (123) 456-7890
-          </p>
-        </section>
+    <div className="min-h-screen flex flex-col items-center bg-slate-100">
+      <main className="flex flex-col items-center w-full">
+        <div className="h-auto flex-col justify-start items-start inline-flex overflow-hidden w-full">
+          <div className="h-auto px-16 py-20 flex-col justify-start items-start gap-20 flex overflow-hidden w-full">
+            <div className="self-stretch justify-start items-center gap-12 inline-flex">
+              <div className="grow shrink basis-0 flex-col justify-start items-start gap-8 inline-flex">
+                <div className="self-stretch h-auto flex-col justify-start items-start gap-6 flex">
+                  <div className="self-stretch text-black text-4xl font-bold leading-tight">Streamline Your Resource Management with Our Innovative Solutions</div>
+                  <div className="self-stretch text-black text-lg font-normal leading-relaxed">Our resource management system simplifies the way departments handle bookings and resources. With intuitive tools for managing requests and tracking availability, efficiency is just a click away.</div>
+                </div>
+                <div className="self-stretch h-auto flex-col justify-start items-start gap-4 flex">
+                  <div className="self-stretch py-2 justify-start items-start gap-6 inline-flex">
+                    <div className="grow shrink basis-0 flex-col justify-start items-start gap-4 inline-flex">
+                      <div className="w-12 h-12 relative overflow-hidden flex items-center justify-center bg-indigo-500 text-white rounded-full">
+                        <FaCogs size={24} />
+                      </div>
+                      <Link to="/resources" className="self-stretch text-black text-xl font-bold leading-7 hover:underline">Check Resources</Link>
+                      <div className="self-stretch text-black text-base font-normal leading-normal">Easily add, update, and track resources to meet your department's needs.</div>
+                    </div>
+                    <div className="grow shrink basis-0 flex-col justify-start items-start gap-4 inline-flex">
+                      <div className="w-12 h-12 relative overflow-hidden flex items-center justify-center bg-indigo-500 text-white rounded-full">
+                        <FaCalendarAlt size={24} />
+                      </div>
+                      <Link to="/bookings" className="self-stretch text-black text-xl font-bold leading-7 hover:underline">Check Bookings</Link>
+                      <div className="self-stretch text-black text-base font-normal leading-normal">Manage bookings effortlessly with approval workflows and real-time availability updates.</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <img className="grow shrink basis-0 h-96 w-96 rounded-3xl shadow-lg" src={img} alt="Resource Management" />
+            </div>
+          </div>
+          <div className="h-auto px-16 py-20 flex-col justify-start items-center gap-20 flex overflow-hidden w-full">
+            <div className="h-auto flex-col justify-start items-center gap-4 flex">
+              <div className="justify-start items-center inline-flex">
+                <div className="text-center text-black text-base font-semibold leading-normal">Streamlined</div>
+              </div>
+              <div className="self-stretch h-auto flex-col justify-start items-center gap-6 flex">
+                <div className="self-stretch text-center text-black text-5xl font-bold leading-tight">Effortless Resource Management for Everyone</div>
+                <div className="self-stretch text-center text-black text-lg font-normal leading-relaxed">Our system simplifies resource management for students, academic staff, and administrators alike. Experience seamless booking and reporting tools designed to enhance your productivity.</div>
+              </div>
+            </div>
+            <div className="self-stretch h-auto flex-col justify-start items-start gap-16 flex">
+              <div className="w-full justify-center items-start gap-24 inline-flex">
+                <div className="grow shrink basis-0 flex-col justify-start items-start gap-8 inline-flex overflow-hidden">
+                  <img className="self-stretch h-60 rounded-3xl shadow-lg" src="https://via.placeholder.com/405x240" alt="Comprehensive Resource Management" />
+                  <div className="self-stretch h-auto flex-col justify-start items-center gap-6 flex">
+                    <div className="self-stretch text-center text-black text-2xl font-bold leading-tight">Comprehensive Resource Management Solutions</div>
+                    <div className="self-stretch text-center text-black text-base font-normal leading-normal">Manage all your departmental resources in one place.</div>
+                  </div>
+                </div>
+                <div className="grow shrink basis-0 flex-col justify-start items-start gap-8 inline-flex overflow-hidden">
+                  <img className="self-stretch h-60 rounded-3xl shadow-lg" src="https://via.placeholder.com/405x240" alt="Efficient Booking Management" />
+                  <div className="self-stretch h-auto flex-col justify-start items-center gap-6 flex">
+                    <div className="self-stretch text-center text-black text-2xl font-bold leading-tight">Efficient Booking Management Features</div>
+                    <div className="self-stretch text-center text-black text-base font-normal leading-normal">Streamline your booking process with our intuitive interface.</div>
+                  </div>
+                </div>
+                <div className="grow shrink basis-0 flex-col justify-start items-start gap-8 inline-flex overflow-hidden">
+                  <img className="self-stretch h-60 rounded-3xl shadow-lg" src="https://via.placeholder.com/405x240" alt="Advanced Reporting Tools" />
+                  <div className="self-stretch h-auto flex-col justify-start items-center gap-6 flex">
+                    <div className="self-stretch text-center text-black text-2xl font-bold leading-tight">Advanced Reporting Tools for Insights</div>
+                    <div className="self-stretch text-center text-black text-base font-normal leading-normal">Generate insightful reports to track resource usage and efficiency.</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="justify-start items-center gap-6 inline-flex">
+              <div className="px-6 py-3 border border-black justify-center items-center gap-2 flex overflow-hidden rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
+                <div className="text-black text-base font-normal leading-normal">Learn More</div>
+              </div>
+              <div className="justify-center items-center gap-2 flex overflow-hidden rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
+                <div className="text-black text-base font-normal leading-normal">Sign Up</div>
+                <div className="w-6 h-6 relative overflow-hidden"></div>
+              </div>
+            </div>
+          </div>
+        </div>
       </main>
     </div>
   );
