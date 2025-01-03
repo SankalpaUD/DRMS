@@ -10,7 +10,7 @@ const UpgradeDetails = () => {
   useEffect(() => {
     const fetchRequest = async () => {
       try {
-        const response = await axios.get(`/api/acceptance/upgrade-requests/${requestId}`);
+        const response = await axios.get(`/api/user/upgrade-requests/${requestId}`);
         setRequest(response.data);
       } catch (error) {
         console.error('Error fetching upgrade request:', error);
@@ -22,7 +22,7 @@ const UpgradeDetails = () => {
 
   const handleApprove = async (requestId) => {
     try {
-      await axios.post('/api/acceptance/approve-upgrade', { requestId, status: 'approved' });
+      await axios.post('/api/user/approve-upgrade', { requestId, status: 'approved' });
       setRequest({ ...request, status: 'approved' });
       navigate('/admin/upgrade-requests');
     } catch (error) {
@@ -32,7 +32,7 @@ const UpgradeDetails = () => {
 
   const handleReject = async (requestId) => {
     try {
-      await axios.post('/api/acceptance/approve-upgrade', { requestId, status: 'rejected' });
+      await axios.post('/api/user/approve-upgrade', { requestId, status: 'rejected' });
       setRequest({ ...request, status: 'rejected' });
       navigate('/admin/upgrade-requests');
     } catch (error) {

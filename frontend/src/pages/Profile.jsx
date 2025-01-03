@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom';
 const Profile = () => {
   const { currentUser } = useSelector((state) => state.user);
 
-  // Parse idDetails
   const idDetails = currentUser.idDetails || {};
 
   return (

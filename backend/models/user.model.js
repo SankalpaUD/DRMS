@@ -27,15 +27,21 @@ const userSchema = new mongoose.Schema({
   },
   address: {
     type: String,
-    trim: true,
+    trim: true
   },
   description: {
     type: String,
     trim: true,
   },
   idDetails: {
-    idNumber: String,
-    idName: String,
+    idNumber: {
+      type: String,
+      trim: true,
+    },
+    idName: {
+      type: String,
+      trim: true,
+    },
   },
   role: {
     type: String,

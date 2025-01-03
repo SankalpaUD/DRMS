@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { FaUser, FaCalendarAlt, FaCog, FaSignOutAlt, FaPlus, FaArrowUp } from 'react-icons/fa';
+import { FaUser, FaCalendarAlt, FaCog, FaSignOutAlt, FaPlus, FaArrowUp, FaClipboardList } from 'react-icons/fa';
 import { logoutSuccess } from '../redux/user/userSlice';
 
 const Sidebar = ({ isOpen }) => {
@@ -32,7 +32,7 @@ const Sidebar = ({ isOpen }) => {
   };
 
   return (
-    <div className={`fixed top-[65px] left-0 h-[calc(100%-65px)] w-56 bg-indigo-400 shadow-lg flex flex-col items-center py-4 z-20 transition-transform duration-300 rounded-r-xl ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+    <div className={`fixed top-[65px] left-0 h-[calc(100%-65px)] w-56 bg-indigo-400 shadow-lg flex flex-col items-center py-12 z-20 transition-transform duration-300 rounded-r-xl ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
       {currentUser && (
         <div className="flex flex-col items-center mb-6">
           <img 
@@ -60,12 +60,20 @@ const Sidebar = ({ isOpen }) => {
           </Link>
         )}
         {currentUser && currentUser.role === 'Acceptance Admin' && (
+           <>
           <Link 
             to="/admin/upgrade-requests" 
             className={getLinkClass('/admin/upgrade-requests')}
           >
             <FaArrowUp className="mr-2" /> Upgrade Requests
           </Link>
+          <Link 
+            to="/admin/resource-requests" 
+            className={getLinkClass('/admin/resource-requests')}
+          >
+            <FaClipboardList className="mr-2" /> Resource Requests
+          </Link>
+          </>
         )}
         <Link 
           to="/bookings" 

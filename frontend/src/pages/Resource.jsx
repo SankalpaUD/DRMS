@@ -1,95 +1,79 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import SwiperCore from 'swiper';
-import { useSelector } from 'react-redux';
-import { Navigation } from 'swiper/modules';
-import 'swiper/css/bundle';
-import {
-  FaMapMarkerAlt,
-  FaPhone,
-  FaShare,
-} from 'react-icons/fa';
+import axios from 'axios';
+import { FaShare, FaMapMarkerAlt, FaPhone } from 'react-icons/fa';
 
-export default function Resource() {
-  SwiperCore.use([Navigation]);
-  const [resource, setResource] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [copied, setCopied] = useState(false);
-  const params = useParams();
+const Resource = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const { currentUser } = useSelector((state) => state.user);
-  const defaultImageUrl =
-    'https://st2.depositphotos.com/3092723/5368/i/450/depositphotos_53689175-stock-photo-home-for-rent.jpg';
+  const [resource, setResource] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [copied, setCopied] = useState(false);
 
   useEffect(() => {
     const fetchResource = async () => {
-      setLoading(true);
       try {
-        const res = await fetch(`/api/resource/get/${params.resourceId}`);
-        const data = await res.json();
-        if (data.success === false) {
-          setError(true);
-          setLoading(false);
-          return;
-        }
-        setResource(data);
-        setLoading(false);
-        setError(false);
+        const response = await axios.get(`/api/resource/get/${id}`);
+        setResource(response.data);
       } catch (error) {
-        setError(true);
+        setError('Error fetching resource details');
+      } finally {
         setLoading(false);
       }
     };
+
     fetchResource();
-  }, [params.resourceId]);
+  }, [id]);
+
+  if (loading) {
+    return <p className="text-center my-7 text-2xl">Loading...</p>;
+  }
+
+  if (error) {
+    return <p className="text-center my-7 text-2xl">Something went wrong!</p>;
+  }
 
   return (
-    <main>
-      {loading && <p className="text-center my-7 text-2xl">Loading...</p>}
-      {error && (
-        <p className="text-center my-7 text-2xl">Something went wrong!</p>
-      )}
-      {resource && !loading && !error && (
-        <div>
-          <Swiper navigation>
-            {(resource.imageUrl && resource.imageUrl.length > 0
-              ? resource.imageUrl
-              : [defaultImageUrl]
-            ).map((url) => (
-              <SwiperSlide key={url}>
-                <div
-                  className="h-[450px] rounded-lg shadow-md"
-                  style={{
-                    background: `url(${url}) center no-repeat`,
-                    backgroundSize: 'cover',
-                  }}
-                ></div>
-              </SwiperSlide>
-            ))}
-          </Swiper>
-
-          {/* Share button */}
-          <div className="fixed top-[13%] right-[3%] z-10 shadow-md border rounded-full w-12 h-12 flex justify-center items-center bg-white cursor-pointer hover:shadow-lg transition duration-300">
-            <FaShare
-              className="text-gray-500 hover:text-gray-700"
-              onClick={() => {
-                navigator.clipboard.writeText(window.location.href);
-                setCopied(true);
-                setTimeout(() => {
-                  setCopied(false);
-                }, 2000);
-              }}
+    <main className="container mx-auto p-6 md:p-12">
+      <div className="flex flex-col md:flex-row">
+        {/* Image Section */}
+        <div className="flex-shrink-0 w-full md:w-1/3 flex mt-14">
+          {resource.imageUrl && resource.imageUrl.length > 0 && (
+            <img
+              src={resource.imageUrl[0]}
+              alt={resource.name}
+              className="w-64 h-64 object-cover rounded-lg shadow-lg"
             />
-          </div>
-          {copied && (
-            <p className="fixed top-[23%] right-[5%] z-10 rounded-md bg-slate-100 p-2 shadow-lg">
-              Link copied!
-            </p>
           )}
+        </div>
 
-          <div className="flex flex-col max-w-4xl mx-auto p-5 my-5 gap-4 bg-white shadow-xl rounded-lg">
+        {/* Details Section */}
+        <div className="flex-grow md:ml-4">
+          <div className="flex justify-between items-center mb-4">
+            <h1 className="text-3xl font-bold text-gray-800">{resource.name}</h1>
+            <div className="relative">
+              <div className="fixed top-[13%] right-[3%] z-10 shadow-md border rounded-full w-12 h-12 flex justify-center items-center bg-white cursor-pointer hover:shadow-lg transition duration-300">
+                <FaShare
+                  className="text-gray-500 hover:text-gray-700"
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    setCopied(true);
+                    setTimeout(() => {
+                      setCopied(false);
+                    }, 2000);
+                  }}
+                />
+              </div>
+              {copied && (
+                <p className="fixed top-[23%] right-[5%] z-10 rounded-md bg-slate-100 p-2 shadow-lg">
+                  Link copied!
+                </p>
+              )}
+            </div>
+          </div>
+
+          <div className="bg-white shadow-xl rounded-lg p-6 space-y-4">
             <div className="flex justify-between items-center">
               <div>
                 <span
@@ -99,45 +83,36 @@ export default function Resource() {
                 >
                   {resource.availability ? 'Available' : 'Not Available!!!'}
                 </span>
-                <p className="text-2xl font-semibold mt-1">
-                  {resource.name}
-                </p>
-                <p className="text-xl font-semibold mt-1">
-                  Type: {resource.type}
-                </p>
+                <p className="text-2xl font-semibold mt-2 text-gray-700">{resource.name}</p>
               </div>
-              {currentUser &&
-                resource.userRef !== currentUser._id &&
-                resource.availability && (
-                  <button
-                    onClick={() =>
-                      navigate('/checkout', {
-                        state: {
-                          userId: currentUser._id,
-                          resourceId: resource._id,
-                          resourceUserId: resource.userRef,
-                          resourceName: resource.name,
-                          image: resource.imageUrl[0],
-                          price: resource.price,
-                          discountPrice: resource.discountPrice,
-                        },
-                      })
-                    }
-                    className="bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg uppercase font-semibold hover:from-blue-600 hover:to-blue-800 shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 p-3"
-                  >
-                    Book Now
-                  </button>
-                )}
+              <button
+                onClick={() => navigate(`/request/${resource._id}`)}
+                className="bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg uppercase font-semibold hover:from-blue-600 hover:to-blue-800 shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 px-6 py-3"
+              >
+                Request Now
+              </button>
             </div>
 
+            <p className="flex items-center gap-3 text-gray-700 text-sm">
+              <FaMapMarkerAlt className="text-green-700" />
+              <span>{resource.location}</span>
+            </p>
+
+            <p className="flex items-center gap-3 text-gray-700 text-sm">
+              <FaPhone className="text-green-700" />
+              <span>{resource.contact}</span>
+            </p>
+
             {/* Description */}
-            <p className="text-gray-700">
+            <p className="text-gray-700 leading-relaxed">
               <span className="font-semibold text-black">Description: </span>
               {resource.description}
             </p>
           </div>
         </div>
-      )}
+      </div>
     </main>
   );
-}
+};
+
+export default Resource;

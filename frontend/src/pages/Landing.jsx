@@ -22,7 +22,7 @@ const Landing = () => {
 
                 {/* Call-to-Action Button */}
                 <Link to="/home">
-                    <button className="py-4 px-6 rounded-lg bg-yellow-300 text-indigo-900 font-semibold hover:bg-yellow-300 transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
+                    <button className="py-4 px-6 rounded-lg bg-white text-indigo-900 font-semibold transition duration-300 ease-in-out transform hover:scale-105 shadow-lg">
                         Get Started
                     </button>
                 </Link>

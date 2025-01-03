@@ -1,5 +1,6 @@
 import Resource from '../models/resource.model.js';
 import cloudinary from '../utils/cloudinary.js';
+import Request from '../models/requesting.model.js';
 
 export const AddResource = async (req, res, next) => {
   try {
@@ -56,6 +57,18 @@ export const getResources = async (req, res, next) => {
   }
 };
 
+export const getResourceById = async (req, res, next) => {
+  try {
+    const resource = await Resource.findById(req.params.id);
+    if (!resource) {
+      return res.status(404).json({ message: 'Resource not found' });
+    }
+    res.status(200).json(resource);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export const updateResource = async (req, res, next) => {
   const { id } = req.params;
   const updates = req.body;
@@ -82,5 +95,51 @@ export const deleteResource = async (req, res, next) => {
     res.status(200).json({ message: 'Resource deleted successfully' });
   } catch (error) {
     next(error);
+  }
+};
+
+export const createRequest = async (req, res) => {
+  try {
+    const { resourceId, requestDate, takenTime, handoverTime } = req.body;
+    const userId = req.user._id;
+
+    const newRequest = new Request({
+      resource: resourceId,
+      user: userId,
+      requestDate,
+      takenTime,
+      handoverTime,
+    });
+
+    await newRequest.save();
+    res.status(201).json({ message: 'Request created successfully', request: newRequest });
+  } catch (error) {
+    res.status(500).json({ message: 'Error creating request', error });
+  }
+};
+
+export const getAllRequests = async (req, res) => {
+  try {
+    const requests = await Request.find().populate('resource user');
+    res.status(200).json(requests);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching requests', error });
+  }
+};
+
+export const approveRequest = async (req, res) => {
+  try {
+    const { status } = req.body;
+    const requestId = req.params.id;
+
+    const updatedRequest = await Request.findByIdAndUpdate(
+      requestId,
+      { status, updatedAt: Date.now() },
+      { new: true }
+    );
+
+    res.status(200).json({ message: 'Request updated successfully', request: updatedRequest });
+  } catch (error) {
+    res.status(500).json({ message: 'Error updating request', error });
   }
 };

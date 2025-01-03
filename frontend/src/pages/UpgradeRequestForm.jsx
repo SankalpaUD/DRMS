@@ -37,7 +37,6 @@ const UpgradeRequestForm = () => {
           'Content-Type': 'multipart/form-data',
         },
       });
-      console.log('Upgrade request submitted:', response.data);
       navigate('/profile');
     } catch (error) {
       console.error('Error submitting upgrade request:', error);
