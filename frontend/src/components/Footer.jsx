@@ -31,12 +31,12 @@ function Footer() {
                 <div>
                     
                     <p className="text-white hover:underline"><a href="mailto:contact@example.com">contact@example.com</a></p>
+
+                    <p className="text-white hover:underline"><a href="mailto:contact@example.com">contact@resourceflow.com</a></p>
+
                 </div>
              </div>
             </li>
-            
-            
-            
           </ul>
         </div>
         
@@ -70,6 +70,7 @@ function Footer() {
             <li>
               <a
                 href="#"
+                href="http://scilms.ruh.ac.lk/science/"
                 className="text-primary hover:text-primary-foreground  hover:text-yellow-300"
               >
                 LMS
@@ -78,6 +79,7 @@ function Footer() {
             <li>
               <a
                 href="#"
+                href="https://paravi.ruh.ac.lk/fosmis/"
                 className="text-primary hover:text-primary-foreground  hover:text-yellow-300"
               >
                 FOSMIS
