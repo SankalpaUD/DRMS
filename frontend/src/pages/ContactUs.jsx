@@ -3,8 +3,8 @@ import {FaFacebook, FaPhoneAlt, FaEnvelope, FaLocationArrow ,FaFacebookF ,FaYout
 
 export default function ContactUs() {
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-      <div className="bg-blue-200 shadow-lg rounded-lg p-8 max-w-7xl w-full  flex flex-col md:flex-row">
+    <div className="min-h-screen bg-slate-100 flex items-center justify-center">
+      <div className="bg-white shadow-lg rounded-lg p-8 max-w-7xl w-full  flex flex-col md:flex-row">
         
             <div className="md:w-1/2 px-6 py-25">
               <h2 className="text-3xl font-bold text-gray-800 mb-4 text-center">Contact Us</h2>

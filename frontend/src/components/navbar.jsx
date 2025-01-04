@@ -11,8 +11,8 @@ const Navbar = ({ toggleSidebar }) => {
   const { currentUser } = useSelector((state) => state.user);
   const [activeLink, setActiveLink] = useState(location.pathname);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  const [isSidebarOpen1, setIsSidebarOpen1] = useState(false);
-  const [isSidebarOpen2, setIsSidebarOpen2] = useState(false);
+  const [isUpSideBarOpen, setIsUpSideBarOpen] = useState(false);
+  const [isLeftSideBarOpen, setIsLeftSideBarOpen] = useState(false);
   const dropdownRef = useRef(null);
   const profileImageRef = useRef(null);
   const dispatch = useDispatch();
@@ -33,11 +33,16 @@ const Navbar = ({ toggleSidebar }) => {
     }
   };
 
-  useEffect(() => {
-    setActiveLink(location.pathname);
-  }, [location.pathname]);
+  const handleResize = () => {
+    if (window.innerWidth < 768) {
+      setIsLeftSideBarOpen(false);
+      toggleSidebar(false);
+    }
+  };
 
   useEffect(() => {
+    setActiveLink(location.pathname);
+
     const handleClickOutside = (event) => {
       if (
         dropdownRef.current &&
@@ -50,23 +55,40 @@ const Navbar = ({ toggleSidebar }) => {
     };
 
     document.addEventListener('mousedown', handleClickOutside);
+    window.addEventListener('resize', handleResize);
+  
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      window.removeEventListener('resize', handleResize);
     };
-  }, [dropdownRef, profileImageRef]);
+    
+  }, [dropdownRef, profileImageRef, location.pathname]);
 
   const handleLinkClick = (path) => {
     setActiveLink(path);
-    setIsDropdownOpen(false); // Hide dropdown when a link is clicked
+    setIsDropdownOpen(false);
   };
 
   const toggleDropdown = (event) => {
-    event.stopPropagation(); // Stop the event from propagating to the document
+    event.stopPropagation(); 
     setIsDropdownOpen((prev) => !prev);
   };
 
-  const toggleSidebar1 = () => setIsSidebarOpen1((prev) => !prev);
-  const toggleSidebar2 = () => setIsSidebarOpen2((prev) => !prev);
+  const toggleUpSideBar = () => {
+    setIsUpSideBarOpen((prev) => !prev);
+    if (isLeftSideBarOpen) {
+      setIsLeftSideBarOpen(false);
+      toggleSidebar(false);
+    }
+  };
+
+  const toggleLeftSideBar = () => {
+    setIsLeftSideBarOpen((prev) => !prev);
+    if (isUpSideBarOpen) {
+      setIsUpSideBarOpen(false);
+    }
+    toggleSidebar();
+  };
 
   return (
     <div className="relative">
@@ -74,11 +96,11 @@ const Navbar = ({ toggleSidebar }) => {
       <div className="w-full min-h-[65px] bg-indigo-500 shadow-lg flex justify-between items-center px-4 md:px-8 fixed z-10">
         {/* Logo & Sidebar Toggle */}
         <div className="flex items-center gap-4">
-          <button className="text-white hidden md:block" onClick={() => { toggleSidebar2(); toggleSidebar(); }}>
+          <button className="text-white hidden md:block" onClick={() => { toggleLeftSideBar(); toggleSidebar(); }}>
             <FaBars size={28} />
           </button>
-          <button className="text-white md:hidden" onClick={toggleSidebar1}>
-            {isSidebarOpen1 ? <FaTimes size={24} /> : <FaBars size={24} />}
+          <button className="text-white md:hidden" onClick={toggleUpSideBar}>
+            {isUpSideBarOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
           </button>
           <Link to="/home" className="flex items-center" onClick={() => handleLinkClick('/home')}>
             <img src={logo} alt="logo" className="w-8 h-8" />
@@ -197,12 +219,12 @@ const Navbar = ({ toggleSidebar }) => {
       </div>
 
       {/* Mobile Sidebar */}
-      {isSidebarOpen1 && (
+      {isUpSideBarOpen && (
         <div className="md:hidden absolute top-full left-0 w-full bg-white shadow-lg z-20 mt-[65px]">
           <Link
             to="/home"
             className="block px-6 py-3 text-black hover:bg-slate-200"
-            onClick={toggleSidebar1}
+            onClick={toggleUpSideBar}
           >
             Home
           </Link>
@@ -210,7 +232,7 @@ const Navbar = ({ toggleSidebar }) => {
           <Link
             to="/resources"
             className="block px-6 py-3 text-black hover:bg-slate-200"
-            onClick={toggleSidebar1}
+            onClick={toggleUpSideBar}
           >
             Resources
           </Link>
@@ -218,7 +240,7 @@ const Navbar = ({ toggleSidebar }) => {
           <Link
             to="/bookings"
             className="block px-6 py-3 text-black hover:bg-slate-200"
-            onClick={toggleSidebar1}
+            onClick={toggleUpSideBar}
           >
             Bookings
           </Link>
@@ -226,7 +248,7 @@ const Navbar = ({ toggleSidebar }) => {
           <Link
             to="/user-guide"
             className="block px-6 py-3 text-black hover:bg-slate-200"
-            onClick={toggleSidebar1}
+            onClick={toggleUpSideBar}
           >
             User Guide
           </Link>
@@ -236,7 +258,7 @@ const Navbar = ({ toggleSidebar }) => {
               <Link
                 to="/profile"
                 className="block px-6 py-3 text-black hover:bg-slate-200"
-                onClick={toggleSidebar1}
+                onClick={toggleUpSideBar}
               >
                 Profile
               </Link>
@@ -244,7 +266,7 @@ const Navbar = ({ toggleSidebar }) => {
               <Link
                 to="/settings"
                 className="block px-6 py-3 text-black hover:bg-slate-200"
-                onClick={toggleSidebar1}
+                onClick={toggleUpSideBar}
               >
                 Settings
               </Link>
@@ -252,7 +274,7 @@ const Navbar = ({ toggleSidebar }) => {
               <Link
                 to="/logout"
                 className="block px-6 py-3 text-black hover:bg-slate-200"
-                onClick={toggleSidebar1}
+                onClick={toggleUpSideBar}
               >
                 Logout
               </Link>
@@ -263,7 +285,7 @@ const Navbar = ({ toggleSidebar }) => {
               <Link
                 to="/signup"
                 className="block px-6 py-3 text-black hover:bg-slate-200"
-                onClick={toggleSidebar1}
+                onClick={toggleUpSideBar}
               >
                 Sign Up
               </Link>
@@ -271,7 +293,7 @@ const Navbar = ({ toggleSidebar }) => {
               <Link
                 to="/login"
                 className="block px-6 py-3 text-black hover:bg-slate-200"
-                onClick={toggleSidebar1}
+                onClick={toggleUpSideBar}
               >
                 Login
               </Link>
@@ -282,7 +304,7 @@ const Navbar = ({ toggleSidebar }) => {
       )}
 
       {/* Sidebar for larger screens */}
-      <Sidebar isOpen={isSidebarOpen2} toggleSidebar={toggleSidebar2} />
+      <Sidebar isOpen={isLeftSideBarOpen} toggleSidebar={toggleLeftSideBar} />
     </div>
   );
 };
