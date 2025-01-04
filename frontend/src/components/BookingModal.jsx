@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 
-const Modal = ({ show, onClose, children }) => {
+const BookingModal = ({ show, onClose, children }) => {
   const modalRef = useRef();
 
   useEffect(() => {
@@ -37,4 +37,4 @@ const Modal = ({ show, onClose, children }) => {
   );
 };
 
-export default Modal;
+export default BookingModal;

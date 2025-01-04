@@ -69,7 +69,6 @@ function Footer() {
           <ul className="text-sm">
             <li>
               <a
-                href="#"
                 href="http://scilms.ruh.ac.lk/science/"
                 className="text-primary hover:text-primary-foreground  hover:text-yellow-300"
               >
@@ -78,7 +77,6 @@ function Footer() {
             </li>
             <li>
               <a
-                href="#"
                 href="https://paravi.ruh.ac.lk/fosmis/"
                 className="text-primary hover:text-primary-foreground  hover:text-yellow-300"
               >

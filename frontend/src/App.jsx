@@ -8,8 +8,9 @@ import Navbar from './components/navbar';
 import Profile from './pages/Profile';
 import Sidebar from './components/SideBar';
 import PrivateRoute from './components/PrivateRoute';
-import Editprofile from './pages/EditProfile';
-import AddResource from './pages/AddResource'; 
+import Editprofile from './pages/Editprofile';
+import AddResource from './pages/AddResource';
+import EditResource from './pages/EditResource'; 
 import AuthProvider from './context/AuthContext';
 import Resources from './pages/Resources';
 import Resource from './pages/Resource';
@@ -25,13 +26,11 @@ import ContactUs from './pages/ContactUs';
 
 function MainApp() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const location = useLocation(); // Get current location
-
+  const location = useLocation(); 
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
 
-  // Check if the current path is Landing
   const isLandingPage = location.pathname === '/';
 
   return (
@@ -41,12 +40,9 @@ function MainApp() {
         {!isLandingPage && <Navbar toggleSidebar={toggleSidebar} />}
         <div className={`transition-all duration-300 ${isSidebarOpen ? 'ml-56' : 'ml-0'} ${!isLandingPage ? 'pt-16' : ''}`}>
           <Routes>
-            {/* Public Route: Landing Page */}
             <Route path="/" element={<Landing />} />
-
-            {/* Other Public Routes */}
             <Route path="/home" element={<Home />} />
-            <Route path="/ContactUs" element={<ContactUs />} />
+            <Route path="/contact-us" element={<ContactUs />} />
             <Route path="/user-guide" element={<Userguide />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
@@ -63,6 +59,7 @@ function MainApp() {
             </Route>
             <Route element={<PrivateRoute roles={['Super Admin', 'Resource Admin']} />}>
               <Route path="/add-resource" element={<AddResource />} />
+              <Route path="/edit-resource/:id" element={<EditResource />} />
             </Route>
             <Route element={<PrivateRoute roles={['Acceptance Admin']} />}>
               <Route path="/admin/upgrade-requests" element={<AdminUpgradeRequests />} />
@@ -82,7 +79,6 @@ export default function App() {
     <AuthProvider>
       <Router>
         <MainApp />
-        <Footer/>
       </Router>
     </AuthProvider>
   );

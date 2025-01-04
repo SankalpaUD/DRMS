@@ -3,14 +3,14 @@ import axios from 'axios';
 import { Calendar, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
-import Modal from '../components/Modal';
+import BookingModal from '../components/BookingModal';
 
 const localizer = momentLocalizer(moment);
 
 const Bookings = () => {
   const [approvedRequests, setApprovedRequests] = useState([]);
   const [selectedBooking, setSelectedBooking] = useState(null);
-  const [showModal, setShowModal] = useState(false);
+  const [showBookingModal, setShowBookingModal] = useState(false);
 
   useEffect(() => {
     const fetchApprovedRequests = async () => {
@@ -36,18 +36,18 @@ const Bookings = () => {
 
   const handleSelectEvent = (event) => {
     setSelectedBooking(event.resource);
-    setShowModal(true);
+    setShowBookingModal(true);
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
+  const handleCloseBookingModal = () => {
+    setShowBookingModal(false);
     setSelectedBooking(null);
   };
 
   return (
     <div className="bg-slate-100 min-h-screen">
-      <div className="container mx-auto p-8">
-        <h1 className="text-3xl font-bold mb-8 text-center">Current Bookings</h1>
+      <div className="container mx-auto px-16 py-8">
+        <h1 className="text-4xl font-bold mb-8 text-center uppercase">Current Bookings</h1>
         <div className="bg-white p-4 rounded-lg shadow-md">
           <Calendar
             localizer={localizer}
@@ -58,7 +58,7 @@ const Bookings = () => {
             onSelectEvent={handleSelectEvent}
           />
         </div>
-        <Modal show={showModal} onClose={handleCloseModal}>
+        <BookingModal show={showBookingModal} onClose={handleCloseBookingModal}>
           {selectedBooking && (
             <div>
               <h2 className="text-2xl font-bold mb-4">Booking Details</h2>
@@ -69,7 +69,7 @@ const Bookings = () => {
               <p className="text-lg"><strong>Handover Time:</strong> {selectedBooking.handoverTime}</p>
             </div>
           )}
-        </Modal>
+        </BookingModal>
       </div>
     </div>
   );
