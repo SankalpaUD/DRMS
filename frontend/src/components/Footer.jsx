@@ -4,7 +4,7 @@ import {FaFacebook, FaGlobe, FaPhoneAlt, FaEnvelope, FaResearchgate } from 'reac
 function Footer() {
   return (
     
-    <div className="border border-t-8 border-teal-500 rounded py-8 px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32  bg-indigo-500 text-white ">
+    <div className=" py-8 px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32  bg-indigo-500 text-white ">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
        
       <div className="text-left  ">
@@ -30,13 +30,13 @@ function Footer() {
             </div>
                 <div>
                     
+                    <p className="text-white hover:underline"><a href="mailto:contact@example.com">contact@example.com</a></p>
+
                     <p className="text-white hover:underline"><a href="mailto:contact@example.com">contact@resourceflow.com</a></p>
+
                 </div>
              </div>
             </li>
-            
-            
-            
           </ul>
         </div>
         

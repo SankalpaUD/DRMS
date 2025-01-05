@@ -4,10 +4,6 @@ import UpgradeRequest from '../models/upgradeReq.model.js';
 import cloudinary from '../utils/cloudinary.js';
 import { errorHandler } from '../utils/error.js';
 
-export const test = (req, res) => {
-  res.status(200).json({ message: 'Test controller working' });
-};
-
 export const updateUser = async (req, res, next) => {
   if (req.user.id !== req.params.id) {
     return next(errorHandler(401, "You can only update your own account"));
@@ -54,7 +50,7 @@ export const updateUser = async (req, res, next) => {
 
 export const createUpgradeRequest = async (req, res, next) => {
   const { idNumber, idName, note, requestedRole } = req.body;
-  const userId = req.user._id;
+  const userId = req.user.id;
 
   try {
     const idFrontImage = req.files.idFrontImage[0];
@@ -98,6 +94,66 @@ export const createUpgradeRequest = async (req, res, next) => {
 
     await newRequest.save();
     res.status(201).json(newRequest);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const approveUpgradeRequest = async (req, res, next) => {
+  const { requestId, status, role, idNumber, idName } = req.body;
+  try {
+    const upgradeRequest = await UpgradeRequest.findById(requestId);
+    if (!upgradeRequest) {
+      return res.status(404).json({ message: 'Upgrade request not found' });
+    }
+
+    upgradeRequest.status = status;
+    await upgradeRequest.save();
+
+    if (status === 'approved') {
+      const updatedUser = await User.findByIdAndUpdate(upgradeRequest.userId, {
+        role: role || upgradeRequest.requestedRole,
+        upgradeRequestStatus: 'approved',
+        $set: {
+          'idDetails.idNumber': idNumber,
+          'idDetails.idName': idName,
+        },
+      }, { new: true, useFindAndModify: false });
+
+      if (!updatedUser) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+
+      // Fetch the updated user to ensure idDetails are included
+      const user = await User.findById(upgradeRequest.userId);
+      res.status(200).json(user);
+    } else {
+      await User.findByIdAndUpdate(upgradeRequest.userId, { upgradeRequestStatus: 'rejected' }, { new: true, useFindAndModify: false });
+      res.status(200).json({ message: `Upgrade request ${status}` });
+    }
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAllUpgradeRequests = async (req, res, next) => {
+  try {
+    const upgradeRequests = await UpgradeRequest.find().populate('userId', 'name email');
+    res.status(200).json(upgradeRequests);
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getUpgradeRequestById = async (req, res, next) => {
+  const { requestId } = req.params;
+
+  try {
+    const upgradeRequest = await UpgradeRequest.findById(requestId).populate('userId', 'name email');
+    if (!upgradeRequest) {
+      return res.status(404).json({ message: 'Upgrade request not found' });
+    }
+    res.status(200).json(upgradeRequest);
   } catch (error) {
     next(error);
   }

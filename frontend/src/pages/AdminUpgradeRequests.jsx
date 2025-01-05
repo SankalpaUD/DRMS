@@ -9,7 +9,7 @@ const AdminUpgradeRequests = () => {
   useEffect(() => {
     const fetchRequests = async () => {
       try {
-        const response = await axios.get('/api/acceptance/upgrade-requests');
+        const response = await axios.get('/api/user/upgrade-requests');
         setRequests(response.data);
       } catch (error) {
         console.error('Error fetching upgrade requests:', error);
@@ -19,9 +19,15 @@ const AdminUpgradeRequests = () => {
     fetchRequests();
   }, []);
 
-  const handleApprove = async (requestId) => {
+  const handleApprove = async (requestId, idNumber, idName, requestedRole) => {
     try {
-      await axios.post('/api/acceptance/approve-upgrade', { requestId, status: 'approved' });
+      const response = await axios.post('/api/user/approve-upgrade', {
+        requestId,
+        status: 'approved',
+        role: requestedRole,
+        idNumber,
+        idName,
+      });
       setRequests(requests.filter(request => request._id !== requestId));
     } catch (error) {
       console.error('Error approving upgrade request:', error);
@@ -30,7 +36,7 @@ const AdminUpgradeRequests = () => {
 
   const handleReject = async (requestId) => {
     try {
-      await axios.post('/api/acceptance/approve-upgrade', { requestId, status: 'rejected' });
+      await axios.post('/api/user/approve-upgrade', { requestId, status: 'rejected' });
       setRequests(requests.filter(request => request._id !== requestId));
     } catch (error) {
       console.error('Error rejecting upgrade request:', error);
@@ -84,7 +90,9 @@ const AdminUpgradeRequests = () => {
                   View Details
                 </Link>
                 <button
-                  onClick={() => handleApprove(request._id)}
+                  onClick={() =>
+                    handleApprove(request._id, request.idDetails.idNumber, request.idDetails.idName, request.requestedRole)
+                  }
                   className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
                 >
                   Approve
