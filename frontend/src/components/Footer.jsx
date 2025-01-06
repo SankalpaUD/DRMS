@@ -1,14 +1,23 @@
 import React from 'react';
 import {FaFacebook, FaGlobe, FaPhoneAlt, FaEnvelope, FaResearchgate } from 'react-icons/fa';
 
-function Footer() {
+function Footer({ isSidebarOpen }) {
   return (
-    
-    <div className=" py-8 px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32  bg-indigo-500 text-white ">
+    <footer
+    className={` ${
+      isSidebarOpen ? 'ml-56' : 'ml-0'
+    }`}
+  >
+    <div className=" py-8 px-4 sm:px-8 md:px-16 lg:px-24 xl:px-32  bg-indigo-500 text-white  ">
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
        
       <div className="text-left  ">
-          <h3 className="text-lg font-bold mb-2 text-left text-flex">Contact Us</h3>
+          <h3 className="text-lg font-bold mb-2 text-left text-flex"><a
+                href="/contact-us"
+                className="text-primary hover:text-primary-foreground  hover:text-yellow-300"
+              >
+                Contact Us
+              </a></h3>
           <ul className="text-sm space-y-2 flex flex-col " >
           
             <li>
@@ -112,7 +121,7 @@ function Footer() {
   	 			</div>
   	 		
     </div>
-    
+    </footer> 
   )
 }
 
