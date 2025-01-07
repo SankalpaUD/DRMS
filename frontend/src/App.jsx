@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
-import Userguide from './pages/UserGuide';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
 import Navbar from './components/navbar';
@@ -27,6 +26,7 @@ import ReportIssue from './pages/ReportIssue';
 import IssuesList from './pages/IssuesList';
 import IssueFeedback from './pages/IssueFeedback';
 import Notification from './pages/Notifications';
+import UserGuide from './pages/Userguide';
 
 function MainApp() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -47,7 +47,7 @@ function MainApp() {
             <Route path="/" element={<Landing />} />
             <Route path="/home" element={<Home />} />
             <Route path="/contact-us" element={<ContactUs />} />
-            <Route path="/user-guide" element={<Userguide />} />
+            <Route path="/user-guide" element={<UserGuide/>} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/login" element={<Login />} />
             <Route path="/resources" element={<Resources />} />
@@ -77,7 +77,7 @@ function MainApp() {
           </Routes>
         </div>
       </div>
-      {location.pathname === '/home' && <Footer />}
+      {!isLandingPage && <Footer isSidebarOpen={isSidebarOpen} />}
     </div>
   );
 }
