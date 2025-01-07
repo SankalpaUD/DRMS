@@ -5,10 +5,12 @@ import { FaBars, FaTimes } from 'react-icons/fa';
 import { logoutSuccess } from '../redux/user/userSlice';
 import Sidebar from './SideBar';
 import logo from '../assets/logo.png';
+import NotificationsIcon from '@mui/icons-material/Notifications';
 
 const Navbar = ({ toggleSidebar }) => {
   const location = useLocation();
   const { currentUser } = useSelector((state) => state.user);
+  const [hasNewNotifications, setHasNewNotifications] = useState(false);
   const [activeLink, setActiveLink] = useState(location.pathname);
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isUpSideBarOpen, setIsUpSideBarOpen] = useState(false);
@@ -54,6 +56,18 @@ const Navbar = ({ toggleSidebar }) => {
       }
     };
 
+    const fetchNotifications = async () => {
+      try {
+        const response = await axios.get(`/api/notifications/${currentUser._id}`);
+        const unreadNotifications = response.data.filter(notification => !notification.read);
+        setHasNewNotifications(unreadNotifications.length > 0);
+      } catch (error) {
+        console.error('Error fetching notifications:', error);
+      }
+    };
+
+    fetchNotifications();
+
     document.addEventListener('mousedown', handleClickOutside);
     window.addEventListener('resize', handleResize);
   
@@ -62,7 +76,7 @@ const Navbar = ({ toggleSidebar }) => {
       window.removeEventListener('resize', handleResize);
     };
     
-  }, [dropdownRef, profileImageRef, location.pathname]);
+  }, [dropdownRef, profileImageRef, location.pathname, currentUser]);
 
   const handleLinkClick = (path) => {
     setActiveLink(path);
@@ -150,6 +164,13 @@ const Navbar = ({ toggleSidebar }) => {
               User Guide
             </Link>
           </div>
+
+          <Link to="/notifications" className="relative">
+            <NotificationsIcon style={{ color: 'white' }} />
+            {hasNewNotifications && (
+              <span className="absolute top-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-500"></span>
+            )}
+          </Link>
 
           {/* Profile or Auth Buttons */}
           {currentUser ? (

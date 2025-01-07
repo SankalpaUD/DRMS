@@ -1,9 +1,12 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FaCogs, FaCalendarAlt } from 'react-icons/fa';
 import img from '../assets/img.png';
 
 export default function Home() {
+  const { currentUser } = useSelector(state => state.user);
+
   return (
     <div className="min-h-screen flex flex-col items-center bg-slate-100">
       <main className="flex flex-col items-center w-full">
@@ -74,12 +77,13 @@ export default function Home() {
             </div>
             <div className="justify-start items-center gap-6 inline-flex">
               <div className="px-6 py-3 border border-black justify-center items-center gap-2 flex overflow-hidden rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
-                <div className="text-black text-base font-normal leading-normal">Learn More</div>
+                <Link to="/user-guide" className="text-black text-base font-normal leading-normal">Learn More</Link>
               </div>
-              <div className="justify-center items-center gap-2 flex overflow-hidden rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
-                <div className="text-black text-base font-normal leading-normal">Sign Up</div>
-                <div className="w-6 h-6 relative overflow-hidden"></div>
+              {!currentUser && (
+              <div className="px-9 py-3 border border-indigo-500 justify-center items-center gap-2 flex overflow-hidden rounded-lg shadow-md transform hover:scale-105 transition-transform duration-300">
+                <Link to="/signup" className="text-black text-base font-normal leading-normal">Sign Up</Link>
               </div>
+              )}
             </div>
           </div>
         </div>

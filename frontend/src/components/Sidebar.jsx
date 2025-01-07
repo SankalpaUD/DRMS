@@ -52,12 +52,20 @@ const Sidebar = ({ isOpen }) => {
           <FaUser className="mr-2" /> Profile
         </Link>
         {currentUser && (currentUser.role === 'Super Admin' || currentUser.role === 'Resource Admin') && (
+          <>
           <Link 
             to="/add-resource" 
             className={getLinkClass('/add-resource')}
           >
             <FaPlus className="mr-2" /> Add Resource
           </Link>
+          <Link
+            to="/issues"
+            className={getLinkClass('/issues')}
+            >
+              <FaClipboardList className="mr-2" /> Reported Issues
+          </Link>
+          </>
         )}
         {currentUser && currentUser.role === 'Acceptance Admin' && (
            <>

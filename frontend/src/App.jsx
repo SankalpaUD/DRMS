@@ -23,6 +23,10 @@ import Footer from './components/Footer';
 import ResourceRequestForm from './pages/ResourceRequestForm';
 import AdminResourceRequests from './pages/AdminResourceRequests';
 import ContactUs from './pages/ContactUs';
+import ReportIssue from './pages/ReportIssue';
+import IssuesList from './pages/IssuesList';
+import IssueFeedback from './pages/IssueFeedback';
+import Notification from './pages/Notifications';
 
 function MainApp() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -51,6 +55,9 @@ function MainApp() {
             <Route path="/request/:resourceId" element={<ResourceRequestForm />} />
             <Route path="/upgrade-request" element={<UpgradeRequestForm />} />
             <Route path="/bookings" element={<Bookings />} />
+            <Route path="/report-issue/:resourceId" element={<ReportIssue />} />
+            <Route path="/issue-feedback/:id" element={<IssueFeedback />} />
+            <Route path="notifications" element={<Notification />} />
 
             {/* Protected Routes */}
             <Route element={<PrivateRoute />}>
@@ -60,6 +67,7 @@ function MainApp() {
             <Route element={<PrivateRoute roles={['Super Admin', 'Resource Admin']} />}>
               <Route path="/add-resource" element={<AddResource />} />
               <Route path="/edit-resource/:id" element={<EditResource />} />
+              <Route path="/issues" element={<IssuesList />} />
             </Route>
             <Route element={<PrivateRoute roles={['Acceptance Admin']} />}>
               <Route path="/admin/upgrade-requests" element={<AdminUpgradeRequests />} />
