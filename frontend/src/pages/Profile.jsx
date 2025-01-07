@@ -1,12 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 const Profile = () => {
   const { currentUser } = useSelector((state) => state.user);
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const idDetails = currentUser.idDetails || {};
   const isAdmin = currentUser.role === 'Super Admin' || currentUser.role === 'Resource Admin' || currentUser.role === 'Acceptance Admin';
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const response = await axios.get('/api/resource/getUserBookings');
+        setBookings(response.data);
+      } catch (error) {
+        console.error('Error fetching bookings:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, []);
 
   return (
     <div className="flex flex-col p-5 font-sans bg-slate-100 min-h-screen w-full items-center">
@@ -25,6 +43,7 @@ const Profile = () => {
           <div className="ml-6">
             <h2 className="text-4xl font-semibold text-gray-800 mb-1">{currentUser.name}</h2>
             <p className="text-gray-600 text-md">{currentUser.email}</p>
+            <p className="text-gray-600 text-md uppercase">({currentUser.role})</p>
           </div>
           <div className="ml-auto">
             <Link
@@ -59,13 +78,20 @@ const Profile = () => {
         {!isAdmin && (
           <div className="bg-white shadow-md rounded-lg p-6 col-span-1 md:col-span-2">
             <h2 className="text-xl font-semibold mb-4 text-gray-800">My Bookings</h2>
-            <ul className="list-disc list-inside text-gray-700">
-              {currentUser.bookings?.length > 0 ? (
-                currentUser.bookings.map((booking, index) => <li key={index}>{booking}</li>)
-              ) : (
-                <li>Not yet</li>
-              )}
-            </ul>
+            {loading ? (
+              <p className="text-gray-700">Loading bookings...</p>
+            ) : bookings.length > 0 ? (
+              <ul className="list-disc list-inside text-gray-700">
+                {bookings.map((booking, index) => (
+                  <li key={index}>
+                    {booking.resource ? booking.resource.name : 'Resource not found'} - {new Date(booking.requestDate).toLocaleDateString()} - Status: {booking.status}
+
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="text-gray-700">No bookings found.</p>
+            )}
           </div>
         )}
       </div>
