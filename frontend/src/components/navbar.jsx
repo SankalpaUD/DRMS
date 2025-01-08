@@ -6,6 +6,7 @@ import { logoutSuccess } from '../redux/user/userSlice';
 import Sidebar from './SideBar';
 import logo from '../assets/logo.png';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import axios from 'axios';
 
 const Navbar = ({ toggleSidebar }) => {
   const location = useLocation();
@@ -58,7 +59,7 @@ const Navbar = ({ toggleSidebar }) => {
 
     const fetchNotifications = async () => {
       try {
-        const response = await axios.get(`/api/notifications/${currentUser._id}`);
+        const response = await axios.get(`/api/user/notifications/${currentUser._id}`);
         const unreadNotifications = response.data.filter(notification => !notification.read);
         setHasNewNotifications(unreadNotifications.length > 0);
       } catch (error) {
@@ -326,6 +327,7 @@ const Navbar = ({ toggleSidebar }) => {
 
       {/* Sidebar for larger screens */}
       <Sidebar isOpen={isLeftSideBarOpen} toggleSidebar={toggleLeftSideBar} />
+      
     </div>
   );
 };

@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
 
 const ProvideFeedback = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [feedback, setFeedback] = useState('');
   const [message, setMessage] = useState('');
 
@@ -12,6 +13,7 @@ const ProvideFeedback = () => {
     try {
       const response = await axios.put(`/api/resource/provideFeedback/${id}`, { feedback });
       setMessage(response.data.message);
+      navigate('/issues'); // Navigate to the issues page after successful feedback
     } catch (error) {
       setMessage('Error providing feedback');
     }
