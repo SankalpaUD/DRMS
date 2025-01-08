@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 import Home from './pages/Home';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
-import Navbar from './components/navbar';
+import Navbar from './components/NavBar';
 import Profile from './pages/Profile';
 import Sidebar from './components/SideBar';
 import PrivateRoute from './components/PrivateRoute';
@@ -31,9 +31,26 @@ import UserGuide from './pages/Userguide';
 function MainApp() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const location = useLocation(); 
+
   const toggleSidebar = () => {
     setIsSidebarOpen(!isSidebarOpen);
   };
+
+  const handleResize = () => {
+    if (window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  };
+
+  useEffect(() => {
+    if (location.pathname === '/' && window.innerWidth < 768) {
+      setIsSidebarOpen(false);} 
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, [location.pathname]);
 
   const isLandingPage = location.pathname === '/';
 
