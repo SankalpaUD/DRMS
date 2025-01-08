@@ -3,6 +3,11 @@ import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { FaCogs, FaCalendarAlt } from 'react-icons/fa';
 import img from '../assets/img.png';
+import WebComponents from '../components/WebComponents';
+import lms from '../assets/lms.jpeg';
+import fosmis from '../assets/fosmis.jpeg';
+import department from '../assets/department.jpeg';
+import university from '../assets/university.jpeg';
 
 export default function Home() {
   const { currentUser } = useSelector(state => state.user);
@@ -86,7 +91,31 @@ export default function Home() {
               )}
             </div>
           </div>
-        </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 h-80 w-screen">
+            <WebComponents
+              image={lms}
+              title="LMS"
+              link="http://scilms.ruh.ac.lk/science/"
+            />
+            <WebComponents
+              image={fosmis}
+              title="FOSMIS"
+              link="https://paravi.ruh.ac.lk/fosmis/"
+            />
+            <WebComponents
+              image={department}
+              title="CS Department"
+              link="https://www.sci.ruh.ac.lk/computer/"
+            />
+            <WebComponents
+              image={university}
+              title="Ruhuna University"
+              link="https://www.ruhuna.ac.lk"
+            />
+          </div>
+
+      </div>
       </main>
     </div>
   );
