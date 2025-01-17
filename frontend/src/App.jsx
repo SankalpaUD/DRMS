@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-route
 import Home from './pages/Home';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
-import Navbar from './components/NavBar';
+import Navbar from './components/navbar';
 import Profile from './pages/Profile';
 import Sidebar from './components/SideBar';
 import PrivateRoute from './components/PrivateRoute';
@@ -27,6 +27,7 @@ import IssuesList from './pages/IssuesList';
 import IssueFeedback from './pages/IssueFeedback';
 import Notification from './pages/Notifications';
 import UserGuide from './pages/Userguide';
+import TimetableManagement from './pages/TimetableManagement';
 
 function MainApp() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -85,6 +86,7 @@ function MainApp() {
               <Route path="/add-resource" element={<AddResource />} />
               <Route path="/edit-resource/:id" element={<EditResource />} />
               <Route path="/issues" element={<IssuesList />} />
+              <Route path="/timetable-management" element={<TimetableManagement />} />
             </Route>
             <Route element={<PrivateRoute roles={['Acceptance Admin']} />}>
               <Route path="/admin/upgrade-requests" element={<AdminUpgradeRequests />} />

@@ -1,12 +1,29 @@
 import mongoose from 'mongoose';
 
-const resourceSchema = new mongoose.Schema({
-  name: {
+const options = { discriminatorKey: 'resourceType', collection: 'resources' };
+
+const timetableSchema = new mongoose.Schema({
+  day: {
+    type: String,
+    enum: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'],
+    required: true,
+  },
+  startTime: {
     type: String,
     required: true,
-    trim: true,
   },
-  type: {
+  endTime: {
+    type: String,
+    required: true,
+  },
+  isAvailable: {
+    type: Boolean,
+    default: false, // Default to false for lecture hours
+  },
+});
+
+const resourceSchema = new mongoose.Schema({
+  name: {
     type: String,
     required: true,
     trim: true,
@@ -23,6 +40,15 @@ const resourceSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
+  resourceType: {
+    type: String,
+    required: true,
+    enum: ['PremisesResourceType', 'AssetResourceType'],
+  },
+  timetable: {
+    type: [timetableSchema], // Add timetable field
+    default: [],
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -31,8 +57,55 @@ const resourceSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
-});
+}, options);
 
 const Resource = mongoose.model('Resource', resourceSchema);
 
-export default Resource;
+const premisesResourceSchema = new mongoose.Schema({
+  premiType: {
+    type: String,
+    required: true,
+    enum: ['Lecture Room', 'Auditorium', 'Mini Auditorium', 'Computer Lab', 'Discussion Room'],
+  },
+  capacity: {
+    type: Number,
+    required: true,
+  },
+  isAC: {
+    type: Boolean,
+    default: false,
+  },
+  hasWhiteboard: {
+    type: Boolean,
+    default: false,
+  },
+  hasProjector: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+const assetResourceSchema = new mongoose.Schema({
+  assetType: {
+    type: String,
+    required: true,
+    enum: ['Laptop', 'Projector', 'Microphone', 'Speaker', 'Camera'],
+  },
+  brand: {
+    type: String,
+    required: true,
+  },
+  model: {
+    type: String,
+    required: true,
+  },
+  quantity: {
+    type: Number,
+    required: true,
+  },
+});
+
+const PremisesResourceType = Resource.discriminator('PremisesResourceType', premisesResourceSchema);
+const AssetResourceType = Resource.discriminator('AssetResourceType', assetResourceSchema);
+
+export { Resource, PremisesResourceType, AssetResourceType };
