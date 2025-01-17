@@ -1,12 +1,9 @@
-import Resource from '../models/resource.model.js';
-import Issue from '../models/issue.model.js';
-import Notification from '../models/notification.model.js';
+import { PremisesResourceType, AssetResourceType, Resource } from '../models/resource.model.js';
 import cloudinary from '../utils/cloudinary.js';
-import Request from '../models/requesting.model.js';
 
 export const AddResource = async (req, res, next) => {
   try {
-    const { name, type, description, availability, ...otherFields } = req.body;
+    const { name, type, description, availability, resourceType, timetable, ...otherFields } = req.body;
 
     const imageUrls = [];
     if (req.files && req.files.length > 0) {
@@ -28,30 +25,49 @@ export const AddResource = async (req, res, next) => {
           stream.end(file.buffer);
         });
       });
-
       const results = await Promise.all(uploadPromises);
       imageUrls.push(...results);
     }
 
-    const newResource = new Resource({
-      name,
-      type,
-      description,
-      availability,
-      imageUrl: imageUrls,
-      ...otherFields,
-    });
+    let resource;
+    if (resourceType === 'PremisesResourceType') {
+      resource = new PremisesResourceType({
+        name,
+        type,
+        description,
+        availability,
+        resourceType,
+        imageUrl: imageUrls,
+        timetable: timetable || [], // Add timetable if provided
+        ...otherFields,
+      });
+    } else if (resourceType === 'AssetResourceType') {
+      resource = new AssetResourceType({
+        name,
+        type,
+        description,
+        availability,
+        resourceType,
+        imageUrl: imageUrls,
+        timetable: timetable || [], // Add timetable if provided
+        ...otherFields,
+      });
+    } else {
+      return res.status(400).json({ message: 'Invalid resource type' });
+    }
 
-    const savedResource = await newResource.save();
-    res.status(201).json(savedResource);
+    await resource.save();
+    res.status(201).json({ message: 'Resource added successfully', resource });
   } catch (error) {
     next(error);
   }
 };
 
 export const getResourceById = async (req, res, next) => {
+  const { id } = req.params;
+
   try {
-    const resource = await Resource.findById(req.params.id);
+    const resource = await Resource.findById(id);
     if (!resource) {
       return res.status(404).json({ message: 'Resource not found' });
     }
@@ -62,7 +78,7 @@ export const getResourceById = async (req, res, next) => {
 };
 
 export const getResources = async (req, res, next) => {
-  const { searchTerm, type, availability } = req.query;
+  const { searchTerm, type, availability, resourceType } = req.query;
 
   try {
     let query = {};
@@ -74,6 +90,9 @@ export const getResources = async (req, res, next) => {
     }
     if (availability) {
       query.availability = availability === 'true';
+    }
+    if (resourceType) {
+      query.resourceType = resourceType;
     }
 
     const resources = await Resource.find(query);
@@ -88,9 +107,8 @@ export const updateResource = async (req, res, next) => {
   const updates = req.body;
 
   try {
-    // Handle file uploads
+    const imageUrls = [];
     if (req.files && req.files.length > 0) {
-      const imageUrls = [];
       const uploadPromises = req.files.map(file => {
         return new Promise((resolve, reject) => {
           const stream = cloudinary.uploader.upload_stream(
@@ -139,112 +157,81 @@ export const deleteResource = async (req, res, next) => {
   }
 };
 
-export const createRequest = async (req, res) => {
+export const addTimetable = async (req, res) => {
+  const { resourceId, timetable } = req.body;
+
   try {
-    const { resourceId, requestDate, takenTime, handoverTime } = req.body;
-    const userId = req.user._id;
+    const resource = await Resource.findById(resourceId);
+    if (!resource) {
+      return res.status(404).json({ message: 'Resource not found' });
+    }
 
-    const newRequest = new Request({
-      resource: resourceId,
-      user: userId,
-      requestDate,
-      takenTime,
-      handoverTime,
-    });
+    resource.timetable.push(timetable);
+    await resource.save();
 
-    await newRequest.save();
-    res.status(201).json({ message: 'Request created successfully', request: newRequest });
+    res.status(200).json({ message: 'Timetable added successfully', resource });
   } catch (error) {
-    res.status(500).json({ message: 'Error creating request', error });
+    res.status(500).json({ message: 'Error adding timetable', error });
   }
 };
 
-export const getAllRequests = async (req, res) => {
+export const updateTimetable = async (req, res) => {
+  const { resourceId, timetableId, timetable } = req.body;
+
   try {
-    const requests = await Request.find().populate('resource user');
-    res.status(200).json(requests);
+    const resource = await Resource.findById(resourceId);
+    if (!resource) {
+      return res.status(404).json({ message: 'Resource not found' });
+    }
+
+    const timetableIndex = resource.timetable.findIndex(t => t._id.toString() === timetableId);
+    if (timetableIndex === -1) {
+      return res.status(404).json({ message: 'Timetable not found' });
+    }
+
+    resource.timetable[timetableIndex] = timetable;
+    await resource.save();
+
+    res.status(200).json({ message: 'Timetable updated successfully', resource });
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching requests', error });
+    res.status(500).json({ message: 'Error updating timetable', error });
   }
 };
 
-export const approveRequest = async (req, res) => {
+export const deleteTimetable = async (req, res) => {
+  const { resourceId, timetableId } = req.params;
+
   try {
-    const { status } = req.body;
-    const requestId = req.params.id;
+    const resource = await Resource.findById(resourceId);
+    if (!resource) {
+      return res.status(404).json({ message: 'Resource not found' });
+    }
 
-    const updatedRequest = await Request.findByIdAndUpdate(
-      requestId,
-      { status, updatedAt: Date.now() },
-      { new: true }
-    );
+    const timetableIndex = resource.timetable.findIndex(t => t._id.toString() === timetableId);
+    if (timetableIndex === -1) {
+      return res.status(404).json({ message: 'Timetable not found' });
+    }
 
-    res.status(200).json({ message: 'Request updated successfully', request: updatedRequest });
+    resource.timetable.splice(timetableIndex, 1);
+    await resource.save();
+
+    res.status(200).json({ message: 'Timetable deleted successfully', resource });
   } catch (error) {
-    res.status(500).json({ message: 'Error updating request', error });
+    res.status(500).json({ message: 'Error deleting timetable', error });
   }
 };
 
-export const getUserBookings = async (req, res) => {
-  const userId = req.user._id;
+export const getTimetables = async (req, res) => {
+  const { resourceId } = req.params;
 
   try {
-    const requests = await Request.find({ user: userId }).populate('resource');
-    res.status(200).json(requests);
+    const resource = await Resource.findById(resourceId);
+    if (!resource) {
+      return res.status(404).json({ message: 'Resource not found' });
+    }
+
+    res.status(200).json(resource.timetable);
   } catch (error) {
-    res.status(500).json({ message: 'Error fetching requests', error });
-  }
-};
-
-export const reportIssue = async (req, res) => {
-  try {
-    const { resourceId, type, description } = req.body;
-    const userId = req.user._id;
-
-    const newIssue = new Issue({
-      resource: resourceId,
-      user: userId,
-      type,
-      description,
-    });
-
-    await newIssue.save();
-    res.status(201).json({ message: 'Issue reported successfully', issue: newIssue });
-  } catch (error) {
-    res.status(500).json({ message: 'Error reporting issue', error });
-  }
-};
-
-export const getIssues = async (req, res) => {
-  try {
-    const issues = await Issue.find().populate('resource user');
-    res.status(200).json(issues);
-  } catch (error) {
-    res.status(500).json({ message: 'Error fetching issues', error });
-  }
-};
-
-export const provideFeedback = async (req, res) => {
-  try {
-    const { feedback } = req.body;
-    const issueId = req.params.id;
-
-    const updatedIssue = await Issue.findByIdAndUpdate(
-      issueId,
-      { feedback, status: 'Resolved', updatedAt: Date.now() },
-      { new: true }
-    ).populate('user');
-
-    // Create a notification for the user
-    const newNotification = new Notification({
-      user: updatedIssue.user._id,
-      message: `Your reported issue has been resolved. Feedback: ${feedback}`,
-    });
-
-    await newNotification.save();
-
-    res.status(200).json({ message: 'Feedback provided successfully', issue: updatedIssue });
-  } catch (error) {
-    res.status(500).json({ message: 'Error providing feedback', error });
+    res.status(500).json({ message: 'Error fetching timetables', error });
   }
 };

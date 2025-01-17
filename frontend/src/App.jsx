@@ -27,6 +27,7 @@ import IssuesList from './pages/IssuesList';
 import IssueFeedback from './pages/IssueFeedback';
 import Notification from './pages/Notifications';
 import UserGuide from './pages/Userguide';
+import TimetableManagement from './pages/TimetableManagement';
 
 function MainApp() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -85,6 +86,7 @@ function MainApp() {
               <Route path="/add-resource" element={<AddResource />} />
               <Route path="/edit-resource/:id" element={<EditResource />} />
               <Route path="/issues" element={<IssuesList />} />
+              <Route path="/timetable-management" element={<TimetableManagement />} />
             </Route>
             <Route element={<PrivateRoute roles={['Acceptance Admin']} />}>
               <Route path="/admin/upgrade-requests" element={<AdminUpgradeRequests />} />

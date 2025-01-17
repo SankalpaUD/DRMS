@@ -1,7 +1,9 @@
 import express from 'express';
 import { verify } from '../utils/verify.js';
 import upload from '../utils/multer.js';
-import { AddResource, getResources, updateResource, deleteResource, getResourceById, createRequest, getAllRequests, approveRequest, getUserBookings, reportIssue, getIssues, provideFeedback } from '../controllers/resource.controller.js';
+import { AddResource, getResources, updateResource, deleteResource, getResourceById, addTimetable, updateTimetable, deleteTimetable, getTimetables } from '../controllers/resource.controller.js';
+import { createRequest, getAllRequests, approveRequest, getUserBookings } from '../controllers/request.controller.js';
+import { reportIssue, getIssues, provideFeedback } from '../controllers/issue.controller.js';
 
 const router = express.Router();
 
@@ -17,5 +19,9 @@ router.put('/approveRequest/:id', verify(['Super Admin', 'Acceptance Admin']), a
 router.post('/reportIssue', verify(['user', 'student', 'staff']), reportIssue);
 router.get('/getIssues', verify(['Super Admin', 'Resource Admin']), getIssues);
 router.put('/provideFeedback/:id', verify(['Super Admin', 'Resource Admin']), provideFeedback);
+router.post('/addTimetable', verify(['Super Admin', 'Resource Admin']), addTimetable);
+router.put('/updateTimetable', verify(['Super Admin', 'Resource Admin']), updateTimetable);
+router.delete('/deleteTimetable/:resourceId/:timetableId', verify(['Super Admin', 'Resource Admin']), deleteTimetable);
+router.get('/getTimetables/:resourceId', verify(['Super Admin', 'Resource Admin']), getTimetables);
 
 export default router;

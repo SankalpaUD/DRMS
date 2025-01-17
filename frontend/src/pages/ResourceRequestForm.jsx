@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
 
 const ResourceRequestForm = () => {
   const { resourceId } = useParams();
-  const [requestDate, setRequestDate] = useState('');
-  const [takenTime, setTakenTime] = useState('');
-  const [handoverTime, setHandoverTime] = useState('');
-  const [message, setMessage] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
+  const [requestDate, setRequestDate] = useState('');
+  const [takenTime, setTakenTime] = useState('08:00');
+  const [handoverTime, setHandoverTime] = useState('16:00');
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -31,50 +31,59 @@ const ResourceRequestForm = () => {
     }
   };
 
+  const handleTakenTimeChange = (event) => {
+    setTakenTime(event.target.value);
+  };
+
+  const handleHandoverTimeChange = (event) => {
+    setHandoverTime(event.target.value);
+  };
+
+  const timeOptions = [];
+  for (let hour = 8; hour <= 16; hour++) {
+    const time = `${hour.toString().padStart(2, '0')}:00`;
+    timeOptions.push(
+      <option key={time} value={time}>
+        {time}
+      </option>
+    );
+  }
+
   return (
     <div className="container mx-auto p-8">
       <h1 className="text-2xl font-bold mb-4">Request Resource</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="requestDate">
-            Request Date
-          </label>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label className="block text-gray-700">Request Date</label>
           <input
             type="date"
-            id="requestDate"
             value={requestDate}
             onChange={(e) => setRequestDate(e.target.value)}
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            className="w-full px-4 py-2 border rounded-lg shadow-inner focus:ring-2 focus:ring-blue-400 focus:outline-none"
             required
           />
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="takenTime">
-            Taken Time
-          </label>
-          <input
-            type="text"
-            id="takenTime"
+        <div>
+          <label className="block text-gray-700">Taken Time</label>
+          <select
             value={takenTime}
-            onChange={(e) => setTakenTime(e.target.value)}
-            placeholder="e.g., 1 PM"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            onChange={handleTakenTimeChange}
+            className="w-full px-4 py-2 border rounded-lg shadow-inner focus:ring-2 focus:ring-blue-400 focus:outline-none"
             required
-          />
+          >
+            {timeOptions}
+          </select>
         </div>
-        <div className="mb-4">
-          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="handoverTime">
-            Handover Time
-          </label>
-          <input
-            type="text"
-            id="handoverTime"
+        <div>
+          <label className="block text-gray-700">Handover Time</label>
+          <select
             value={handoverTime}
-            onChange={(e) => setHandoverTime(e.target.value)}
-            placeholder="e.g., 2 PM"
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            onChange={handleHandoverTimeChange}
+            className="w-full px-4 py-2 border rounded-lg shadow-inner focus:ring-2 focus:ring-blue-400 focus:outline-none"
             required
-          />
+          >
+            {timeOptions}
+          </select>
         </div>
         <button
           type="submit"

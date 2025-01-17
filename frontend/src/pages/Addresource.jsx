@@ -9,205 +9,320 @@ export default function AddResource() {
   const [files, setFiles] = useState([]);
   const [formData, setFormData] = useState({
     name: '',
-    type: '',
     description: '',
     imageUrl: [],
     availability: true,
+    resourceType: 'PremisesResourceType', // Default to PremisesResourceType
+    premiType: '',
+    assetType: '',
+    capacity: '',
+    isAC: false,
+    hasWhiteboard: false,
+    hasProjector: false,
+    hasDesktopOrLaptop: false,
+    hasMicrophone: false,
+    brand: '',
+    model: '',
+    quantity: '',
   });
   const [imageUploadError, setImageUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(false);
-  const [loading, setLoading] = useState(false);
-
-  const handleImageChange = (e) => {
-    const selectedFiles = Array.from(e.target.files);
-    if (selectedFiles.length + formData.imageUrl.length > 6) {
-      setImageUploadError('You can only upload up to 6 images.');
-      return;
-    }
-    setFiles(selectedFiles);
-    const urls = selectedFiles.map(file => URL.createObjectURL(file));
-    setFormData({
-      ...formData,
-      imageUrl: formData.imageUrl.concat(urls),
-    });
-  };
-
-  const handleRemoveImage = (index) => {
-    setFormData({
-      ...formData,
-      imageUrl: formData.imageUrl.filter((_, i) => i !== index),
-    });
-    setFiles(files.filter((_, i) => i !== index));
-  };
 
   const handleChange = (e) => {
-    const { id, value, checked, type } = e.target;
-    if (type === 'checkbox') {
-      setFormData((prevData) => ({
-        ...prevData,
-        [id]: checked,
-      }));
-    } else {
-      setFormData((prevData) => ({
-        ...prevData,
-        [id]: value,
-      }));
-    }
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === 'checkbox' ? checked : value,
+    });
+  };
+
+  const handleFileChange = (e) => {
+    setFormData({
+      ...formData,
+      imageUrl: e.target.files,
+    });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const formDataToSend = new FormData();
-    formDataToSend.append('name', formData.name);
-    formDataToSend.append('type', formData.type);
-    formDataToSend.append('description', formData.description);
-    formDataToSend.append('availability', formData.availability);
-    files.forEach(file => {
-      formDataToSend.append('images', file);
+    Object.keys(formData).forEach((key) => {
+      if (key === 'imageUrl') {
+        for (let i = 0; i < formData.imageUrl.length; i++) {
+          formDataToSend.append('images', formData.imageUrl[i]);
+        }
+      } else {
+        formDataToSend.append(key, formData[key]);
+      }
     });
 
     try {
-      setLoading(true);
-      setError(false);
-      const res = await axios.post('/api/resource/add', formDataToSend, {
+      await axios.post('/api/resource/add', formDataToSend, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${currentUser.access_token}`,
         },
       });
-      const data = res.data;
-      setLoading(false);
-      if (data.success === false) {
-        setError(data.message);
-      } else {
-        navigate(`/resource/${data._id}`);
-      }
+      alert('Resource added successfully');
+      navigate('/resources');
     } catch (error) {
-      setError(error.message);
-      setLoading(false);
+      console.error('Error adding resource:', error);
     }
   };
 
   return (
-    <div className="min-h-screen p-6 max-w-4xl mx-auto rounded-xl shadow-lg bg-gradient-to-r from-gray-100 to-gray-200 mt-10">
-      <main className="p-4 max-w-5xl mx-auto">
-        <h1 className="text-center mt-1 mb-10 text-4xl font-bold uppercase tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-teal-400">
-          Add Resource
-        </h1>
-
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Resource Details Section */}
-          <section className="p-6 bg-white rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-4 text-gray-700">
-              Resource Details
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <input
-                type="text"
-                placeholder="Name"
-                className="w-full border p-3 rounded-lg"
-                id="name"
-                maxLength="62"
-                minLength="5"
-                required
+    <div className="bg-slate-100 min-h-screen">
+    <div className="container mx-auto p-8">
+      <h1 className="text-3xl font-bold mb-7 text-center text-gray-800">Add Resource</h1>
+      <form onSubmit={handleSubmit} className="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="name">
+            Name
+          </label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="description">
+            Description
+          </label>
+          <textarea
+            id="description"
+            name="description"
+            value={formData.description}
+            onChange={handleChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          />
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="availability">
+            Availability
+          </label>
+          <input
+            type="checkbox"
+            id="availability"
+            name="availability"
+            checked={formData.availability}
+            onChange={handleChange}
+            className="mr-2 leading-tight"
+          />
+          <span className="text-gray-700">Available</span>
+        </div>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="resourceType">
+            Resource Type
+          </label>
+          <select
+            id="resourceType"
+            name="resourceType"
+            value={formData.resourceType}
+            onChange={handleChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          >
+            <option value="">Select a resource type</option>
+            <option value="PremisesResourceType">Premises Resource</option>
+            <option value="AssetResourceType">Asset Resource</option>
+          </select>
+        </div>
+        {formData.resourceType === 'PremisesResourceType' && (
+          <>
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="premiType">
+                Premises Type
+              </label>
+              <select
+                id="premiType"
+                name="premiType"
+                value={formData.premiType}
                 onChange={handleChange}
-                value={formData.name}
-              />
-              <input
-                type="text"
-                placeholder="Type"
-                className="w-full border p-3 rounded-lg"
-                id="type"
-                required
-                onChange={handleChange}
-                value={formData.type}
-              />
-              <textarea
-                placeholder="Description"
-                className="w-full border p-3 rounded-lg"
-                id="description"
-                required
-                onChange={handleChange}
-                value={formData.description}
-              />
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              >
+                <option value="">Select a premises type</option>
+                <option value="Lecture Room">Lecture Room</option>
+                <option value="Auditorium">Auditorium</option>
+                <option value="Mini Auditorium">Mini Auditorium</option>
+                <option value="Computer Lab">Computer Lab</option>
+                <option value="Discussion Room">Discussion Room</option>
+              </select>
             </div>
-          </section>
-
-          {/* Availability Status */}
-          <section className="p-6 bg-white rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-4 text-gray-700">
-              Availability Status
-            </h2>
-            <div className="flex items-center gap-2 mb-4">
-              <label htmlFor="availability" className="block text-lg font-medium text-gray-700">
-                Availability
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="capacity">
+                Capacity
               </label>
               <input
-                type="checkbox"
-                id="availability"
-                checked={formData.availability}
+                type="number"
+                id="capacity"
+                name="capacity"
+                value={formData.capacity}
                 onChange={handleChange}
-                className="mt-1 w-4 h-4"
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
             </div>
-          </section>
-
-          {/* Image Upload */}
-          <section className="p-6 bg-white rounded-lg shadow-md">
-            <h2 className="text-xl font-semibold mb-4 text-gray-700">
-              Upload Images
-              <span className="font-normal text-gray-600 ml-2">
-                (The first image will be the cover, max 6)
-              </span>
-            </h2>
-            <div className="flex gap-4">
+            <div className="mb-4 flex flex-wrap">
+              <div className="mr-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="isAC">
+                  Air Conditioning
+                </label>
+                <input
+                  type="checkbox"
+                  id="isAC"
+                  name="isAC"
+                  checked={formData.isAC}
+                  onChange={handleChange}
+                  className="mr-2 leading-tight"
+                />
+                <span className="text-gray-700">Yes</span>
+              </div>
+              <div className="mr-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="hasWhiteboard">
+                  Whiteboard
+                </label>
+                <input
+                  type="checkbox"
+                  id="hasWhiteboard"
+                  name="hasWhiteboard"
+                  checked={formData.hasWhiteboard}
+                  onChange={handleChange}
+                  className="mr-2 leading-tight"
+                />
+                <span className="text-gray-700">Yes</span>
+              </div>
+              <div className="mr-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="hasProjector">
+                  Projector
+                </label>
+                <input
+                  type="checkbox"
+                  id="hasProjector"
+                  name="hasProjector"
+                  checked={formData.hasProjector}
+                  onChange={handleChange}
+                  className="mr-2 leading-tight"
+                />
+                <span className="text-gray-700">Yes</span>
+              </div>
+              <div className="mr-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="hasDesktopOrLaptop">
+                  Desktop/Laptop
+                </label>
+                <input
+                  type="checkbox"
+                  id="hasDesktopOrLaptop"
+                  name="hasDesktopOrLaptop"
+                  checked={formData.hasDesktopOrLaptop}
+                  onChange={handleChange}
+                  className="mr-2 leading-tight"
+                />
+                <span className="text-gray-700">Yes</span>
+              </div>
+              <div className="mr-4">
+                <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="hasMicrophone">
+                  Microphone
+                </label>
+                <input
+                  type="checkbox"
+                  id="hasMicrophone"
+                  name="hasMicrophone"
+                  checked={formData.hasMicrophone}
+                  onChange={handleChange}
+                  className="mr-2 leading-tight"
+                />
+                <span className="text-gray-700">Yes</span>
+              </div>
+            </div>
+          </>
+        )}
+        {formData.resourceType === 'AssetResourceType' && (
+          <>
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="assetType">
+                Asset Type
+              </label>
+              <select
+                id="assetType"
+                name="assetType"
+                value={formData.assetType}
+                onChange={handleChange}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              >
+                <option value="">Select an asset type</option>
+                <option value="Laptop">Laptop</option>
+                <option value="Projector">Projector</option>
+                <option value="Microphone">Microphone</option>
+                <option value="Speaker">Speaker</option>
+                <option value="Camera">Camera</option>
+              </select>
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="brand">
+                Brand
+              </label>
               <input
-                onChange={handleImageChange}
-                type="file"
-                name="images"
-                accept="image/*"
-                multiple
-                className="p-3 border border-gray-400 rounded w-full"
+                type="text"
+                id="brand"
+                name="brand"
+                value={formData.brand}
+                onChange={handleChange}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
               />
             </div>
-            {imageUploadError && (
-              <p className="text-red-500 mt-2">{imageUploadError}</p>
-            )}
-            <div className="flex flex-wrap gap-2 mt-4">
-              {formData.imageUrl.map((url, index) => (
-                <div
-                  key={url}
-                  className="relative flex justify-between p-3 border items-center"
-                >
-                  <img
-                    src={url}
-                    alt="uploaded"
-                    className="w-20 h-20 object-cover rounded-md"
-                  />
-                  <button
-                    onClick={() => handleRemoveImage(index)}
-                    className="absolute top-0 right-0 bg-red-600 text-white w-6 h-6 flex items-center justify-center rounded-full"
-                  >
-                    X
-                  </button>
-                </div>
-              ))}
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="model">
+                Model
+              </label>
+              <input
+                type="text"
+                id="model"
+                name="model"
+                value={formData.model}
+                onChange={handleChange}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
             </div>
-          </section>
-
-          {/* Submit Button */}
+            <div className="mb-4">
+              <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="quantity">
+                Quantity
+              </label>
+              <input
+                type="number"
+                id="quantity"
+                name="quantity"
+                value={formData.quantity}
+                onChange={handleChange}
+                className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+            </div>
+          </>
+        )}
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="images">
+            Images
+          </label>
+          <input
+            type="file"
+            id="images"
+            name="images"
+            multiple
+            onChange={handleFileChange}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+          />
+        </div>
+        <div className="flex items-center justify-between">
           <button
             type="submit"
-            className="bg-green-500 text-white px-10 py-4 rounded-lg uppercase hover:bg-green-600 shadow-lg transform hover:translate-y-1 w-full flex items-center justify-center mx-auto"
-            disabled={loading || uploading}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
           >
-            {loading ? 'Saving...' : 'Add Resource'}
+            Add Resource
           </button>
-          {error && <p className="text-red-600 mt-2">{error}</p>}
-        </form>
-      </main>
+        </div>
+      </form>
+    </div>
     </div>
   );
 }

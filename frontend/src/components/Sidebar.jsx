@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { FaUser, FaCalendarAlt, FaCog, FaSignOutAlt, FaPlus, FaArrowUp, FaClipboardList } from 'react-icons/fa';
+import { FaUser, FaCalendarAlt, FaCog, FaSignOutAlt, FaPlus, FaArrowUp, FaClipboardList, FaTable } from 'react-icons/fa';
 import { logoutSuccess } from '../redux/user/userSlice';
 
 const Sidebar = ({ isOpen }) => {
@@ -64,6 +64,12 @@ const Sidebar = ({ isOpen }) => {
             className={getLinkClass('/issues')}
             >
               <FaClipboardList className="mr-2" /> Reported Issues
+          </Link>
+          <Link
+            to="/timetable-management"
+            className={getLinkClass('/timetable-management')}
+            >
+              <FaTable className="mr-2" /> Timetable Management
           </Link>
           </>
         )}

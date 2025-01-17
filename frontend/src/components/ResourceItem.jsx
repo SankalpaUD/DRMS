@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 
 const ResourceItem = ({ resource }) => {
   return (
-    <div className="bg-white shadow-md hover:shadow-xl rounded-lg overflow-hidden w-full sm:w-[280px] transform hover:scale-105 transition-transform duration-300 ease-in-out">
+    <div className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-shadow duration-300 ease-in-out">
       <Link to={`/resource/${resource._id}`}>
         <img
           src={
@@ -22,6 +22,16 @@ const ResourceItem = ({ resource }) => {
           <p className="text-sm text-gray-600 line-clamp-2">
             {resource.description}
           </p>
+          {resource.resourceType === 'PremisesResourceType' && (
+            <p className="text-sm text-gray-600">
+              Capacity: {resource.capacity}
+            </p>
+          )}
+          {resource.resourceType === 'AssetResourceType' && (
+            <p className="text-sm text-gray-600">
+              Brand: {resource.brand}, Model: {resource.model}
+            </p>
+          )}
         </div>
       </Link>
     </div>

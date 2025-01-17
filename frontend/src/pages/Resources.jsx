@@ -16,8 +16,16 @@ const Resources = () => {
 
   useEffect(() => {
     const fetchResources = async () => {
+      setLoading(true);
       try {
-        const response = await axios.get('/api/resource/get');
+        const response = await axios.get('/api/resource/get', {
+          params: {
+            type: filters.type,
+            availability: filters.availability,
+            resourceType: filters.resourceType,
+            searchTerm,
+          },
+        });
         setResources(response.data);
       } catch (error) {
         console.error('Error fetching resources:', error);
@@ -25,9 +33,9 @@ const Resources = () => {
         setLoading(false);
       }
     };
-
+  
     fetchResources();
-  }, []);
+  }, [filters, searchTerm]);
 
   const debouncedFetchResources = debounce(async (searchQuery, filters) => {
     setLoading(true);
@@ -84,9 +92,8 @@ const Resources = () => {
           onClick={handleFilterIconClick}
         />
         {isFilterDropdownOpen && (
-          <div className="absolute right-0 mt-2 w-64 bg-white border border-gray-300 rounded-lg shadow-lg p-4 z-10">
-            <h2 className="text-xl font-semibold mb-4">Filter Options</h2>
-            <div className="mb-4">
+          <div className="absolute top-full left-0 mt-2 w-full bg-white border rounded-lg shadow-lg z-10">
+            <div className="p-4">
               <label className="block text-gray-700">Type</label>
               <input
                 type="text"
@@ -96,7 +103,7 @@ const Resources = () => {
                 className="w-full px-4 py-2 border rounded-lg shadow-inner focus:ring-2 focus:ring-blue-400 focus:outline-none"
               />
             </div>
-            <div className="mb-4">
+            <div className="p-4">
               <label className="block text-gray-700">Availability</label>
               <select
                 name="availability"
@@ -109,29 +116,44 @@ const Resources = () => {
                 <option value="false">Not Available</option>
               </select>
             </div>
-            <button
-              onClick={handleApplyFilters}
-              className="bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition duration-300"
-            >
-              Apply Filters
-            </button>
+            <div className="p-4">
+              <label className="block text-gray-700">Resource Type</label>
+              <select
+                name="resourceType"
+                value={filters.resourceType}
+                onChange={handleFilterChange}
+                className="w-full px-4 py-2 border rounded-lg shadow-inner focus:ring-2 focus:ring-blue-400 focus:outline-none"
+              >
+                <option value="">All</option>
+                <option value="PremisesResourceType">Premises Resource</option>
+                <option value="AssetResourceType">Asset Resource</option>
+              </select>
+            </div>
+            <div className="p-4">
+              <button
+                onClick={handleApplyFilters}
+                className="w-full bg-blue-500 text-white rounded-lg py-2 font-semibold hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+              >
+                Apply Filters
+              </button>
+            </div>
           </div>
         )}
       </div>
-      {loading ? (
-        <p className="text-blue-500">Loading resources...</p>
-      ) : (
-        resources.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {resources.map(resource => (
-              <ResourceItem key={resource._id} resource={resource} />
-            ))}
-          </div>
+        {loading ? (
+          <p className="text-blue-500">Loading resources...</p>
         ) : (
-          <p className="text-red-700 mt-5">No resources found.</p>
-        )
-      )}
-    </div>
+          resources.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {resources.map(resource => (
+                <ResourceItem key={resource._id} resource={resource} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-red-700 mt-5">No resources found.</p>
+          )
+        )}
+      </div>
   );
 };
 

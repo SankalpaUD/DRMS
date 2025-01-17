@@ -8,6 +8,9 @@ import lms from '../assets/lms.jpeg';
 import fosmis from '../assets/fosmis.jpeg';
 import department from '../assets/department.jpeg';
 import university from '../assets/university.jpeg';
+import report from '../assets/report.jpg';
+import booking from '../assets/booking.jpg';
+import analysis from '../assets/analysis.png';
 
 export default function Home() {
   const { currentUser } = useSelector(state => state.user);
@@ -20,7 +23,7 @@ export default function Home() {
             <div className="self-stretch justify-start items-center gap-12 inline-flex">
               <div className="grow shrink basis-0 flex-col justify-start items-start gap-8 inline-flex">
                 <div className="self-stretch h-auto flex-col justify-start items-start gap-6 flex">
-                  <div className="self-stretch text-black text-4xl font-bold leading-tight">Streamline Your Resource Management with Our Innovative Solutions</div>
+                  <div className="self-stretch text-black text-4xl font-bold leading-tight">Streamline Your Resource Management with Our ResourceFlow</div>
                   <div className="self-stretch text-black text-lg font-normal leading-relaxed">Our resource management system simplifies the way departments handle bookings and resources. With intuitive tools for managing requests and tracking availability, efficiency is just a click away.</div>
                 </div>
                 <div className="self-stretch h-auto flex-col justify-start items-start gap-4 flex">
@@ -45,7 +48,7 @@ export default function Home() {
               <img className="grow shrink basis-0 h-96 w-96 rounded-3xl shadow-lg" src={img} alt="Resource Management" />
             </div>
           </div>
-          <div className="h-auto px-16 py-20 flex-col justify-start items-center gap-20 flex overflow-hidden w-full">
+          <div className="h-auto px-16 py-10 flex-col justify-start items-center gap-20 flex overflow-hidden w-full">
             <div className="h-auto flex-col justify-start items-center gap-4 flex">
               <div className="justify-start items-center inline-flex">
                 <div className="text-center text-black text-base font-semibold leading-normal">Streamlined</div>
@@ -58,21 +61,21 @@ export default function Home() {
             <div className="self-stretch h-auto flex-col justify-start items-start gap-16 flex">
               <div className="w-full justify-center items-start gap-24 inline-flex">
                 <div className="grow shrink basis-0 flex-col justify-start items-start gap-8 inline-flex overflow-hidden">
-                  <img className="self-stretch h-60 rounded-3xl shadow-lg" src="https://via.placeholder.com/405x240" alt="Comprehensive Resource Management" />
+                  <img className="self-stretch h-60 rounded-3xl shadow-lg" src={analysis}alt="Comprehensive Resource Management" />
                   <div className="self-stretch h-auto flex-col justify-start items-center gap-6 flex">
                     <div className="self-stretch text-center text-black text-2xl font-bold leading-tight">Comprehensive Resource Management Solutions</div>
                     <div className="self-stretch text-center text-black text-base font-normal leading-normal">Manage all your departmental resources in one place.</div>
                   </div>
                 </div>
                 <div className="grow shrink basis-0 flex-col justify-start items-start gap-8 inline-flex overflow-hidden">
-                  <img className="self-stretch h-60 rounded-3xl shadow-lg" src="https://via.placeholder.com/405x240" alt="Efficient Booking Management" />
+                  <img className="self-stretch h-60 rounded-3xl shadow-lg" src={booking} alt="Efficient Booking Management" />
                   <div className="self-stretch h-auto flex-col justify-start items-center gap-6 flex">
                     <div className="self-stretch text-center text-black text-2xl font-bold leading-tight">Efficient Booking Management Features</div>
                     <div className="self-stretch text-center text-black text-base font-normal leading-normal">Streamline your booking process with our intuitive interface.</div>
                   </div>
                 </div>
                 <div className="grow shrink basis-0 flex-col justify-start items-start gap-8 inline-flex overflow-hidden">
-                  <img className="self-stretch h-60 rounded-3xl shadow-lg" src="https://via.placeholder.com/405x240" alt="Advanced Reporting Tools" />
+                  <img className="self-stretch h-60 rounded-3xl shadow-lg" src={report} alt="Advanced Reporting Tools" />
                   <div className="self-stretch h-auto flex-col justify-start items-center gap-6 flex">
                     <div className="self-stretch text-center text-black text-2xl font-bold leading-tight">Advanced Reporting Tools for Insights</div>
                     <div className="self-stretch text-center text-black text-base font-normal leading-normal">Generate insightful reports to track resource usage and efficiency.</div>

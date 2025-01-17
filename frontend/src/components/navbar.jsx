@@ -166,16 +166,17 @@ const Navbar = ({ toggleSidebar }) => {
             </Link>
           </div>
 
-          <Link to="/notifications" className="relative">
-            <NotificationsIcon style={{ color: 'white' }} />
-            {hasNewNotifications && (
-              <span className="absolute top-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-500"></span>
-            )}
-          </Link>
-
           {/* Profile or Auth Buttons */}
           {currentUser ? (
+            
             <div className="relative">
+              <div className='flex items-center gap-4'>
+              <Link to="/notifications" className="relative">
+              <NotificationsIcon style={{ color: 'white' }} />
+              {hasNewNotifications && (
+              <span className="absolute top-0 right-0 block h-2 w-2 rounded-full ring-2 ring-white bg-red-500"></span>
+              )}
+              </Link>
               <img
                 ref={profileImageRef}
                 src={currentUser.avatar}
@@ -184,6 +185,9 @@ const Navbar = ({ toggleSidebar }) => {
                 style={{ minWidth: '36px', minHeight: '36px' }}
                 onClick={toggleDropdown}
               />
+
+              </div>
+
               {isDropdownOpen && (
                 <div
                   ref={dropdownRef}
