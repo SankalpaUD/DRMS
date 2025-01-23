@@ -8,7 +8,7 @@ import Profile from './pages/Profile';
 import Sidebar from './components/SideBar';
 import PrivateRoute from './components/PrivateRoute';
 import Editprofile from './pages/Editprofile';
-import AddResource from './pages/AddResource';
+import AddResource from './pages/Addresource';
 import EditResource from './pages/EditResource'; 
 import AuthProvider from './context/AuthContext';
 import Resources from './pages/Resources';
@@ -28,6 +28,12 @@ import IssueFeedback from './pages/IssueFeedback';
 import Notification from './pages/Notifications';
 import UserGuide from './pages/Userguide';
 import TimetableManagement from './pages/TimetableManagement';
+import AddFulfillStaff from './pages/AddFulfillStaff';
+import ShowFulfillStaff from './pages/ShowFulfillStaff';
+import EditFulfillStaff from './pages/EditFulfillStaff';
+import AddUser from './pages/AddUser';
+import ManageUsers from './pages/ManageUsers';
+import EditUser from './pages/EditUser';
 
 function MainApp() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -82,17 +88,27 @@ function MainApp() {
               <Route path="/profile" element={<Profile />} />
               <Route path="/edit-profile" element={<Editprofile />} />
             </Route>
+            <Route element={<PrivateRoute roles={['Super Admin']} />}>
+              <Route path="/add-user" element={<AddUser />} />
+              <Route path="/manage-users" element={<ManageUsers />} />
+              <Route path="/edit-user" element={<EditUser />} />
+            </Route>
             <Route element={<PrivateRoute roles={['Super Admin', 'Resource Admin']} />}>
               <Route path="/add-resource" element={<AddResource />} />
               <Route path="/edit-resource/:id" element={<EditResource />} />
               <Route path="/issues" element={<IssuesList />} />
               <Route path="/timetable-management" element={<TimetableManagement />} />
             </Route>
-            <Route element={<PrivateRoute roles={['Acceptance Admin']} />}>
+            <Route element={<PrivateRoute roles={['Super Admin', 'Acceptance Admin']} />}>
               <Route path="/admin/upgrade-requests" element={<AdminUpgradeRequests />} />
               <Route path="/admin/upgrade-requests/:requestId" element={<UpgradeDetails />} />
               <Route path="/admin/resource-requests" element={<AdminResourceRequests />} />
             </Route>
+          <Route element={<PrivateRoute roles={['Super Admin','Fulfillment Admin']} />}>
+            <Route path="/add-fulfill-staff" element={<AddFulfillStaff/>} />
+            <Route path="/show-fulfill-staff" element={<ShowFulfillStaff/>} />
+            <Route path="/edit-fulfill-staff" element={<EditFulfillStaff/>} />
+          </Route>
           </Routes>
         </div>
       </div>

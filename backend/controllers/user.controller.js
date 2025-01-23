@@ -4,9 +4,20 @@ import UpgradeRequest from '../models/upgradeReq.model.js';
 import cloudinary from '../utils/cloudinary.js';
 import { errorHandler } from '../utils/error.js';
 
+// Get all users
+export const getAllUsers = async (req, res, next) => {
+  try {
+    const users = await User.find();
+    res.status(200).json(users);
+  } catch (error) {
+    next(errorHandler(500, 'Error fetching users'));
+  }
+};
+
+// Update a user
 export const updateUser = async (req, res, next) => {
-  if (req.user.id !== req.params.id) {
-    return next(errorHandler(401, "You can only update your own account"));
+  if (req.user.id !== req.params.id && req.user.role !== 'Super Admin') {
+    return next(errorHandler(401, 'You can only update your own account or you must be a Super Admin'));
   }
   try {
     if (req.body.newPassword) {
@@ -33,18 +44,34 @@ export const updateUser = async (req, res, next) => {
           stream.end(req.file.buffer);
         });
       };
-
       avatarUrl = await streamUpload(req);
-      req.body.avatar = avatarUrl;
     }
 
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {
-      new: true,
-    });
+    const updatedUser = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        ...req.body,
+        avatar: avatarUrl || req.body.avatar,
+      },
+      { new: true }
+    );
 
     res.status(200).json(updatedUser);
   } catch (error) {
-    next(error);
+    next(errorHandler(500, 'Error updating user'));
+  }
+};
+
+// Delete a user
+export const deleteUser = async (req, res, next) => {
+  if (req.user.id !== req.params.id && req.user.role !== 'Super Admin') {
+    return next(errorHandler(401, 'You can only delete your own account or you must be a Super Admin'));
+  }
+  try {
+    await User.findByIdAndDelete(req.params.id);
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    next(errorHandler(500, 'Error deleting user'));
   }
 };
 

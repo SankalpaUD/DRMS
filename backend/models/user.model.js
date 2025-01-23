@@ -45,7 +45,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['user', 'student', 'staff', 'Acceptance Admin', 'Super Admin', 'Resource Admin'],
+    enum: ['user', 'student', 'staff', 'Acceptance Admin', 'Super Admin', 'Resource Admin', 'Fulfillment Admin'],
     default: 'user',
   },
   upgradeRequestStatus: {

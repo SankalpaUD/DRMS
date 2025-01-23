@@ -163,7 +163,16 @@ const Resource = () => {
                   </p>
                 </>
               )}
-
+              {currentUser && (currentUser.role === 'user' || currentUser.role === 'student' || currentUser.role === 'staff') && (
+              <div className="flex justify-end">
+                <button
+                  onClick={() => navigate(`/report-issue/${resource._id}`)}
+                  className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition duration-300 mt-4"
+                >
+                  Report Issue
+                </button>
+              </div>
+              )}
               {currentUser && (currentUser.role === 'Super Admin' || currentUser.role === 'Resource Admin') && (
                 <div className="flex justify-end space-x-4 mt-12">
                   <button

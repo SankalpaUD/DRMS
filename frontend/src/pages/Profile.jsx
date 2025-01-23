@@ -9,7 +9,7 @@ const Profile = () => {
   const [loading, setLoading] = useState(true);
 
   const idDetails = currentUser.idDetails || {};
-  const isAdmin = currentUser.role === 'Super Admin' || currentUser.role === 'Resource Admin' || currentUser.role === 'Acceptance Admin';
+  const isAdmin = currentUser.role === 'Super Admin' || currentUser.role === 'Resource Admin' || currentUser.role === 'Acceptance Admin' || currentUser.role === 'Fulfillment Admin';
 
   useEffect(() => {
     const fetchBookings = async () => {

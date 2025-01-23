@@ -3,7 +3,7 @@ import bcrypt from 'bcryptjs';
 import dotenv from 'dotenv';
 import User from '../models/user.model.js';
 
-dotenv.config(); // Load environment variables
+dotenv.config();
 
 const seedAdmins = async () => {
     try {
@@ -13,7 +13,8 @@ const seedAdmins = async () => {
         const admins = [
             { name: 'Super Admin', password: 'Sadmin', email: 'superadmin@example.com', role: 'Super Admin' },
             { name: 'Resource Admin', password: 'Radmin', email: 'resourceadmin@example.com', role: 'Resource Admin' },
-            { name: 'Acceptance Admin', password: 'Aadmin', email: 'acceptanceadmin@example.com', role: 'Acceptance Admin' }
+            { name: 'Acceptance Admin', password: 'Aadmin', email: 'acceptanceadmin@example.com', role: 'Acceptance Admin' },
+            { name: 'Fulfillment Admin', password: 'Fadmin', email: 'fulfillmentadmin@example.com', role: 'Fulfillment Admin'}
         ];
 
         for (const admin of admins) {
@@ -23,7 +24,7 @@ const seedAdmins = async () => {
                 email: admin.email,
                 password: hashedPassword,
                 role: admin.role,
-                avatar: 'https://cdn.vectorstock.com/i/500p/94/35/admin-icon-isolated-on-white-background-vector-53099435.jpg' // Default admin avatar
+                avatar: 'https://cdn.vectorstock.com/i/500p/94/35/admin-icon-isolated-on-white-background-vector-53099435.jpg'
             });
             await newAdmin.save();
             console.log(`Admin ${admin.name} created`);
