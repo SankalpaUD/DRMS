@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { FaUser, FaCalendarAlt, FaCog, FaSignOutAlt, FaPlus, FaArrowUp, FaClipboardList, FaTable } from 'react-icons/fa';
+import { FaUser, FaCalendarAlt, FaCog, FaSignOutAlt, FaPlus, FaArrowUp, FaClipboardList, FaTable, FaUserPlus, FaUsers } from 'react-icons/fa';
 import { logoutSuccess } from '../redux/user/userSlice';
 
 const Sidebar = ({ isOpen }) => {
@@ -69,7 +69,7 @@ const Sidebar = ({ isOpen }) => {
             to="/timetable-management"
             className={getLinkClass('/timetable-management')}
             >
-              <FaTable className="mr-2" /> Timetable Management
+              <FaTable className="mr-2" /> Manage Timetable
           </Link>
           </>
         )}
@@ -86,6 +86,26 @@ const Sidebar = ({ isOpen }) => {
             className={getLinkClass('/admin/resource-requests')}
           >
             <FaClipboardList className="mr-2" /> Resource Requests
+          </Link>
+          </>
+        )}
+         {currentUser && (currentUser.role === 'Fulfillment Admin' || currentUser.role === 'Super Admin') && (
+           <>
+          <Link 
+            to="/show-fulfill-staff" 
+            className={getLinkClass('/show-fulfill-staff')}
+          >
+            <FaUserPlus className="mr-2" /> Manage Fulfill Staff
+          </Link>
+          </>
+        )}
+        {currentUser && (currentUser.role === 'Super Admin') && (
+           <>
+          <Link 
+            to="/manage-users" 
+            className={getLinkClass('/manage-users')}
+          >
+            <FaUsers className="mr-2" /> Manage Users
           </Link>
           </>
         )}

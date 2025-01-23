@@ -4,6 +4,7 @@ import upload from '../utils/multer.js';
 import { AddResource, getResources, updateResource, deleteResource, getResourceById, addTimetable, updateTimetable, deleteTimetable, getTimetables } from '../controllers/resource.controller.js';
 import { createRequest, getAllRequests, approveRequest, getUserBookings } from '../controllers/request.controller.js';
 import { reportIssue, getIssues, provideFeedback } from '../controllers/issue.controller.js';
+import { addFulfillStaff, getAllFulfillStaff, updateFulfillStaff, deleteFulfillStaff } from '../controllers/fulfillstaff.controller.js';
 
 const router = express.Router();
 
@@ -23,5 +24,10 @@ router.post('/addTimetable', verify(['Super Admin', 'Resource Admin']), addTimet
 router.put('/updateTimetable', verify(['Super Admin', 'Resource Admin']), updateTimetable);
 router.delete('/deleteTimetable/:resourceId/:timetableId', verify(['Super Admin', 'Resource Admin']), deleteTimetable);
 router.get('/getTimetables/:resourceId', verify(['Super Admin', 'Resource Admin']), getTimetables);
+router.use('/fulfillstaff',verify(['Super Admin', 'Fulfillment Admin']), addFulfillStaff);
+router.post('/addFulfillstaff', verify(['Super Admin', 'Fulfillment Admin']), addFulfillStaff);
+router.get('/getFulfillstaffs', verify(['Super Admin', 'Fulfillment Admin']), getAllFulfillStaff);
+router.put('/updateFulfillstaff/:id', verify(['Super Admin', 'Fulfillment Admin']), updateFulfillStaff);
+router.delete('/deleteFulfillstaff/:id', verify(['Super Admin', 'Fulfillment Admin']), deleteFulfillStaff);
 
 export default router;
