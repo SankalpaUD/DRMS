@@ -21,6 +21,7 @@ import Landing from './pages/Landing';
 import Footer from './components/Footer';
 import ResourceRequestForm from './pages/ResourceRequestForm';
 import AdminResourceRequests from './pages/AdminResourceRequests';
+import AdminResourceRequestDetails from './pages/AdminResourceRequestDetails';
 import ContactUs from './pages/ContactUs';
 import ReportIssue from './pages/ReportIssue';
 import IssuesList from './pages/IssuesList';
@@ -103,6 +104,7 @@ function MainApp() {
               <Route path="/admin/upgrade-requests" element={<AdminUpgradeRequests />} />
               <Route path="/admin/upgrade-requests/:requestId" element={<UpgradeDetails />} />
               <Route path="/admin/resource-requests" element={<AdminResourceRequests />} />
+              <Route path="/admin/resource-requests/:requestId" element={<AdminResourceRequestDetails />} />
             </Route>
           <Route element={<PrivateRoute roles={['Super Admin','Fulfillment Admin']} />}>
             <Route path="/add-fulfill-staff" element={<AddFulfillStaff/>} />

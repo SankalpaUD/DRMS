@@ -73,7 +73,7 @@ const Sidebar = ({ isOpen }) => {
           </Link>
           </>
         )}
-        {currentUser && currentUser.role === 'Acceptance Admin' && (
+        {currentUser && (currentUser.role === 'Super Admin' || currentUser.role === 'Acceptance Admin') && (
            <>
           <Link 
             to="/admin/upgrade-requests" 

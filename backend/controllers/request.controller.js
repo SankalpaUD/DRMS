@@ -1,19 +1,19 @@
-import Request from '../models/requesting.model.js';
 import { Resource } from '../models/resource.model.js';
+import Request from '../models/requesting.model.js';
 
 export const createRequest = async (req, res, next) => {
-  const { resourceId, requestDate, takenTime, handoverTime } = req.body;
+  const { resource, requestDate, takenTime, handoverTime, reason, additionalDetails, userRole, userDetails } = req.body;
   const userId = req.user._id; // Get the user ID from the authenticated user
 
   try {
-    const resource = await Resource.findById(resourceId);
-    if (!resource) {
+    const resourceData = await Resource.findById(resource);
+    if (!resourceData) {
       return res.status(404).json({ message: 'Resource not found' });
     }
 
     // Check for timetable conflicts
     const dayOfWeek = new Date(requestDate).toLocaleString('en-us', { weekday: 'long' });
-    const conflict = resource.timetable.some(t => 
+    const conflict = resourceData.timetable.some(t => 
       t.day === dayOfWeek && 
       t.isAvailable === false && 
       ((takenTime >= t.startTime && takenTime < t.endTime) || 
@@ -25,22 +25,25 @@ export const createRequest = async (req, res, next) => {
     }
 
     const newRequest = new Request({
-      resource: resourceId,
-      user: userId, // Include the user ID
+      resource: resourceData._id,
+      user: userId,
       requestDate,
       takenTime,
       handoverTime,
-      status: 'Pending',
+      reason,
+      additionalDetails,
+      userRole,
+      userDetails: userRole === 'user' ? userDetails : undefined,
     });
 
     await newRequest.save();
-    res.status(201).json({ message: 'Request created successfully', request: newRequest });
+    res.status(201).json(newRequest);
   } catch (error) {
     next(error);
   }
 };
 
-export const getAllRequests = async (req, res) => {
+export const getRequests = async (req, res) => {
   try {
     const requests = await Request.find().populate('resource user');
     res.status(200).json(requests);
@@ -49,20 +52,55 @@ export const getAllRequests = async (req, res) => {
   }
 };
 
-export const approveRequest = async (req, res) => {
+export const getRequestById = async (req, res) => {
+  const { id } = req.params;
   try {
-    const { status } = req.body;
-    const requestId = req.params.id;
-
-    const updatedRequest = await Request.findByIdAndUpdate(
-      requestId,
-      { status, updatedAt: Date.now() },
-      { new: true }
-    );
-
-    res.status(200).json({ message: 'Request updated successfully', request: updatedRequest });
+    const request = await Request.findById(id).populate('resource user');
+    if (!request) {
+      return res.status(404).json({ message: 'Request not found' });
+    }
+    res.status(200).json(request);
   } catch (error) {
-    res.status(500).json({ message: 'Error updating request', error });
+    res.status(500).json({ message: 'Error fetching request', error });
+  }
+};
+
+export const approveRequest = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const request = await Request.findByIdAndUpdate(id, { status: 'approved' }, { new: true });
+    if (!request) {
+      return res.status(404).json({ message: 'Request not found' });
+    }
+    res.status(200).json(request);
+  } catch (error) {
+    res.status(500).json({ message: 'Error approving request', error });
+  }
+};
+
+export const rejectRequest = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const request = await Request.findByIdAndUpdate(id, { status: 'rejected' }, { new: true });
+    if (!request) {
+      return res.status(404).json({ message: 'Request not found' });
+    }
+    res.status(200).json(request);
+  } catch (error) {
+    res.status(500).json({ message: 'Error rejecting request', error });
+  }
+};
+
+export const deleteRequest = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const request = await Request.findByIdAndDelete(id);
+    if (!request) {
+      return res.status(404).json({ message: 'Request not found' });
+    }
+    res.status(200).json({ message: 'Request deleted successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Error deleting request', error });
   }
 };
 

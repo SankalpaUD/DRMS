@@ -13,9 +13,9 @@ router.delete('/deleteuser/:id', verify(['Super Admin', 'User']), deleteUser);
 
 // Upgrade request routes
 router.post('/upgrade-request', verify(), upload.fields([{ name: 'idFrontImage' }, { name: 'idBackImage' }]), createUpgradeRequest);
-router.post('/approve-upgrade', verify(['Acceptance Admin']), approveUpgradeRequest);
-router.get('/upgrade-requests', verify(['Acceptance Admin']), getAllUpgradeRequests);
-router.get('/upgrade-requests/:requestId', verify(['Acceptance Admin']), getUpgradeRequestById);
+router.post('/approve-upgrade', verify(['Super Admin', 'Acceptance Admin']), approveUpgradeRequest);
+router.get('/upgrade-requests', verify(['Super Admin', 'Acceptance Admin']), getAllUpgradeRequests);
+router.get('/upgrade-requests/:requestId', verify(['Super Admin', 'Acceptance Admin']), getUpgradeRequestById);
 
 // Notification routes
 router.get('/notifications/:userId', verify(), getNotifications);

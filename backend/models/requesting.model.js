@@ -28,6 +28,24 @@ const resourceRequestSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  reason: {
+    type: String,
+    required: true,
+  },
+  additionalDetails: {
+    type: String,
+  },
+  userRole: {
+    type: String,
+    enum: ['student', 'staff', 'user'],
+    required: true,
+  },
+  userDetails: {
+    type: String,
+    required: function() {
+      return this.userRole === 'user';
+    },
+  },
   createdAt: {
     type: Date,
     default: Date.now,
@@ -38,6 +56,11 @@ const resourceRequestSchema = new mongoose.Schema({
   },
 });
 
-const Request = mongoose.model('resourceRequest', resourceRequestSchema);
+resourceRequestSchema.pre('save', function(next) {
+  this.updatedAt = Date.now();
+  next();
+});
 
-export default Request;
+const ResourceRequest = mongoose.model('ResourceRequest', resourceRequestSchema);
+
+export default ResourceRequest;
