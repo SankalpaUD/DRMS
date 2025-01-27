@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Calendar, momentLocalizer, Views } from 'react-big-calendar';
+import { Calendar, Views, momentLocalizer } from 'react-big-calendar';
 import moment from 'moment';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
@@ -52,7 +52,7 @@ const Bookings = () => {
     fetchResourcesAndTimetables();
   }, []);
 
-  const getDayOfWeekDate = (dayOfWeek) => {
+  const getDayOfWeekDate = (dayOfWeek, startDate) => {
     const daysOfWeek = {
       Sunday: 0,
       Monday: 1,
@@ -62,12 +62,11 @@ const Bookings = () => {
       Friday: 5,
       Saturday: 6,
     };
-    const now = new Date();
-    const currentDay = now.getDay();
+    const date = new Date(startDate);
+    const currentDay = date.getDay();
     const distance = daysOfWeek[dayOfWeek] - currentDay;
-    const targetDate = new Date(now);
-    targetDate.setDate(now.getDate() + distance);
-    return targetDate;
+    date.setDate(date.getDate() + distance);
+    return date;
   };
 
   const handleSelectSlot = (slotInfo) => {
@@ -84,9 +83,36 @@ const Bookings = () => {
   });
 
   const lectureBookings = timetables.filter(timetable => {
-    const lectureDate = getDayOfWeekDate(timetable.day).toDateString();
+    const lectureDate = getDayOfWeekDate(timetable.day, selectedDate).toDateString();
     return selectedDate && lectureDate === selectedDate.toDateString();
   });
+
+  const generateRecurringEvents = (timetable) => {
+    const events = [];
+    const startDate = new Date();
+    const endDate = new Date();
+    endDate.setMonth(endDate.getMonth() + 3); // Generate events for the next 3 months
+
+    for (let date = getDayOfWeekDate(timetable.day, startDate); date <= endDate; date.setDate(date.getDate() + 7)) {
+      const eventStart = new Date(date);
+      const eventEnd = new Date(date);
+      const [startHour, startMinute] = timetable.startTime.split(':');
+      const [endHour, endMinute] = timetable.endTime.split(':');
+
+      eventStart.setHours(startHour, startMinute);
+      eventEnd.setHours(endHour, endMinute);
+
+      events.push({
+        title: `Lecture Hours - ${timetable.resourceName}`,
+        start: new Date(eventStart),
+        end: new Date(eventEnd),
+        allDay: false,
+        resource: timetable,
+      });
+    }
+
+    return events;
+  };
 
   const events = currentView === Views.MONTH ? [] : [
     ...approvedRequests.map(request => ({
@@ -96,23 +122,7 @@ const Bookings = () => {
       allDay: true,
       resource: request,
     })),
-    ...timetables.map(timetable => {
-      const startDate = getDayOfWeekDate(timetable.day);
-      const endDate = new Date(startDate);
-      const [startHour, startMinute] = timetable.startTime.split(':');
-      const [endHour, endMinute] = timetable.endTime.split(':');
-
-      startDate.setHours(startHour, startMinute);
-      endDate.setHours(endHour, endMinute);
-
-      return {
-        title: `Lecture Hours - ${timetable.resourceName}`,
-        start: startDate,
-        end: endDate,
-        allDay: false,
-        resource: timetable,
-      };
-    })
+    ...timetables.flatMap(timetable => generateRecurringEvents(timetable))
   ];
 
   return (
@@ -149,6 +159,7 @@ const Bookings = () => {
                   <th className="py-2 px-4 border-b border-gray-300 text-center">Resource Name</th>
                   <th className="py-2 px-4 border-b border-gray-300 text-center">User</th>
                   <th className="py-2 px-4 border-b border-gray-300 text-center">Date</th>
+                  <th className="py-2 px-4 border-b border-gray-300 text-center">Time</th>
                   <th className="py-2 px-4 border-b border-gray-300 text-center">Status</th>
                 </tr>
               </thead>
@@ -158,6 +169,7 @@ const Bookings = () => {
                     <td className="py-2 px-4 border-b border-gray-300 text-center">{booking.resource?.name || 'N/A'}</td>
                     <td className="py-2 px-4 border-b border-gray-300 text-center">{booking.user?.name || 'N/A'}</td>
                     <td className="py-2 px-4 border-b border-gray-300 text-center">{new Date(booking.requestDate).toLocaleDateString()}</td>
+                    <td className="py-2 px-4 border-b border-gray-300 text-center">{`${booking.takenTime} - ${booking.handoverTime}`}</td>
                     <td className="py-2 px-4 border-b border-gray-300 text-center">{booking.status}</td>
                   </tr>
                 ))}
@@ -166,6 +178,7 @@ const Bookings = () => {
                     <td className="py-2 px-4 border-b border-gray-300 text-center">{lecture.resourceName}</td>
                     <td className="py-2 px-4 border-b border-gray-300 text-center">Lecture</td>
                     <td className="py-2 px-4 border-b border-gray-300 text-center">{selectedDate.toLocaleDateString()}</td>
+                    <td className="py-2 px-4 border-b border-gray-300 text-center">{`${lecture.startTime} - ${lecture.endTime}`}</td>
                     <td className="py-2 px-4 border-b border-gray-300 text-center">Scheduled</td>
                   </tr>
                 ))}

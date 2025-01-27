@@ -101,7 +101,7 @@ const Resource = () => {
                     if (!currentUser) {
                       navigate('/login');
                     } else {
-                      navigate(`/request/${resource._id}`);
+                      navigate(`/request/${resource._id}`, { state: { resourceName: resource.name, resourceId: resource._id } });
                     }
                   }}
                   className="bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg uppercase font-semibold hover:from-blue-600 hover:to-blue-800 shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 px-6 py-3"
