@@ -18,8 +18,10 @@ const Resource = () => {
       try {
         const response = await axios.get(`/api/resource/get/${id}`);
         setResource(response.data);
+        console.log(response.data);//newly added to check the response data
+        
       } catch (error) {
-        setError('Error fetching resource details');
+        setError("Error fetching resource details");
       } finally {
         setLoading(false);
       }
@@ -31,9 +33,9 @@ const Resource = () => {
   const handleDelete = async () => {
     try {
       await axios.delete(`/api/resource/delete/${resource._id}`);
-      navigate('/resources'); // Redirect to resources page after deletion
+      navigate("/resources"); // Redirect to resources page after deletion
     } catch (error) {
-      console.error('Error deleting resource:', error);
+      console.error("Error deleting resource:", error);
     }
   };
 
@@ -89,19 +91,21 @@ const Resource = () => {
                 <div>
                   <span
                     className={`text-lg font-semibold ${
-                      resource.availability ? 'text-green-600' : 'text-red-600'
+                      resource.availability ? "text-green-600" : "text-red-600"
                     }`}
                   >
-                    {resource.availability ? 'Available' : 'Not Available!!!'}
+                    {resource.availability ? "Available" : "Not Available!!!"}
                   </span>
-                  <p className="text-2xl font-semibold mt-2 text-gray-700">{resource.name}</p>
+                  <p className="text-2xl font-semibold mt-2 text-gray-700">
+                    {resource.name}
+                  </p>
                 </div>
                 <button
                   onClick={() => {
                     if (!currentUser) {
-                      navigate('/login');
+                      navigate("/login");
                     } else {
-                      navigate(`/request/${resource._id}`, { state: { resourceName: resource.name, resourceId: resource._id } });
+                      navigate(`/request/${resource._id}`);
                     }
                   }}
                   className="bg-gradient-to-r from-blue-500 to-blue-700 text-white rounded-lg uppercase font-semibold hover:from-blue-600 hover:to-blue-800 shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 px-6 py-3"
@@ -116,79 +120,154 @@ const Resource = () => {
                 {resource.description}
               </p>
 
-              {/* Additional Attributes for Premises Resources */}
-              {resource.resourceType === 'PremisesResourceType' && (
-                <>
-                  <p className="text-gray-700 leading-relaxed mt-4">
-                    <span className="font-semibold text-black">Capacity: </span>
-                    {resource.capacity}
-                  </p>
-                  <p className="text-gray-700 leading-relaxed mt-4">
-                    <span className="font-semibold text-black">Air Conditioning: </span>
-                    {resource.isAC ? 'Yes' : 'No'}
-                  </p>
-                  <p className="text-gray-700 leading-relaxed mt-4">
-                    <span className="font-semibold text-black">Whiteboard: </span>
-                    {resource.hasWhiteboard ? 'Yes' : 'No'}
-                  </p>
-                  <p className="text-gray-700 leading-relaxed mt-4">
-                    <span className="font-semibold text-black">Projector: </span>
-                    {resource.hasProjector ? 'Yes' : 'No'}
-                  </p>
-                  <p className="text-gray-700 leading-relaxed mt-4">
-                    <span className="font-semibold text-black">Desktop or Laptop: </span>
-                    {resource.hasDesktopOrLaptop ? 'Yes' : 'No'}
-                  </p>
-                  <p className="text-gray-700 leading-relaxed mt-4">
-                    <span className="font-semibold text-black">Microphone: </span>
-                    {resource.hasMicrophone ? 'Yes' : 'No'}
-                  </p>
-                </>
-              )}
+             {/* Common Attributes (original ones) */}
+{resource.resourceType === 'PremisesResourceType' && (
+  <>
+    <p className="text-gray-700 leading-relaxed mt-4">
+      <span className="font-semibold text-black">Capacity: </span>
+      {resource.capacity}
+    </p>
+    <p className="text-gray-700 leading-relaxed mt-4">
+      <span className="font-semibold text-black">Air Conditioning: </span>
+      {resource.isAC ? 'Yes' : 'No'}
+    </p>
+    <p className="text-gray-700 leading-relaxed mt-4">
+      <span className="font-semibold text-black">Whiteboard: </span>
+      {resource.hasWhiteboard ? 'Yes' : 'No'}
+    </p>
+    <p className="text-gray-700 leading-relaxed mt-4">
+      <span className="font-semibold text-black">Projector: </span>
+      {resource.hasProjector ? 'Yes' : 'No'}
+    </p>
+    <p className="text-gray-700 leading-relaxed mt-4">
+      <span className="font-semibold text-black">Desktop or Laptop: </span>
+      {resource.hasDesktopOrLaptop ? 'Yes' : 'No'}
+    </p>
+    <p className="text-gray-700 leading-relaxed mt-4">
+      <span className="font-semibold text-black">Microphone: </span>
+      {resource.hasMicrophone ? 'Yes' : 'No'}
+    </p>
+  </>
+)}
 
-              {/* Additional Attributes for Asset Resources */}
-              {resource.resourceType === 'AssetResourceType' && (
-                <>
-                  <p className="text-gray-700 leading-relaxed mt-4">
-                    <span className="font-semibold text-black">Brand: </span>
-                    {resource.brand}
-                  </p>
-                  <p className="text-gray-700 leading-relaxed mt-4">
-                    <span className="font-semibold text-black">Model: </span>
-                    {resource.model}
-                  </p>
-                  <p className="text-gray-700 leading-relaxed mt-4">
-                    <span className="font-semibold text-black">Quantity: </span>
-                    {resource.quantity}
-                  </p>
-                </>
-              )}
-              {currentUser && (currentUser.role === 'user' || currentUser.role === 'student' || currentUser.role === 'staff') && (
-              <div className="flex justify-end">
-                <button
-                  onClick={() => navigate(`/report-issue/${resource._id}`)}
-                  className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition duration-300 mt-4"
-                >
-                  Report Issue
-                </button>
-              </div>
-              )}
-              {currentUser && (currentUser.role === 'Super Admin' || currentUser.role === 'Resource Admin') && (
-                <div className="flex justify-end space-x-4 mt-12">
-                  <button
-                    onClick={() => navigate(`/edit-resource/${resource._id}`)}
-                    className="bg-yellow-500 text-white rounded-lg uppercase font-semibold hover:bg-yellow-600 shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 px-6 py-3"
-                  >
-                    <FaEdit className="inline mr-2" /> Edit
-                  </button>
-                  <button
-                    onClick={handleDelete}
-                    className="bg-red-500 text-white rounded-lg uppercase font-semibold hover:bg-red-600 shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 px-6 py-3"
-                  >
-                    <FaTrash className="inline mr-2" /> Delete
-                  </button>
-                </div>
-              )}
+{/* Additional Attributes for Asset Resources */}
+{resource.resourceType === 'AssetResourceType' && (
+  <>
+    <p className="text-gray-700 leading-relaxed mt-4">
+      <span className="font-semibold text-black">Brand: </span>
+      {resource.brand}
+    </p>
+    <p className="text-gray-700 leading-relaxed mt-4">
+      <span className="font-semibold text-black">Model: </span>
+      {resource.model}
+    </p>
+    <p className="text-gray-700 leading-relaxed mt-4">
+      <span className="font-semibold text-black">Quantity: </span>
+      {resource.quantity}
+    </p>
+  </>
+)}
+
+{Object.entries(resource).map(([key, value]) => {
+
+const capitalizeFirstLetter = (str) => {
+  if (!str) return str; // If the string is empty or undefined
+  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+};
+  const excludedFields = [
+    "_id",
+    "name",
+    "imageUrl",
+    "description",
+    "availability",
+    "resourceType",
+    "capacity", // Exclude common attributes
+    "isAC",
+    "hasWhiteboard",
+    "hasProjector",
+    "hasDesktopOrLaptop",
+    "hasMicrophone",
+    "brand",
+    "model",
+    "quantity",
+    "resourceType",
+    "premiType",
+    "createdAt",
+    "updatedAt",
+    "__v",
+    "timetable",
+    "assetType"
+  ];
+
+  if (!excludedFields.includes(key)) {
+    // Capitalize the first letter of the key and leave the rest in lowercase
+    let formattedKey = key.replace(/([A-Z])/g, " $1").replace(/^./, (str) =>
+      capitalizeFirstLetter(str) // Capitalize only the first letter of key
+    );
+
+    // Check for object or array values and display accordingly
+    let formattedValue;
+    if (typeof value === "object" && !Array.isArray(value)) {
+      formattedValue = Object.entries(value).map(([subKey, subValue]) => {
+        return (
+          <div key={subKey} className="text-gray-700 leading-relaxed mt-2">
+            <span className="font-semibold text-black">{capitalizeFirstLetter(subKey)}: </span> {/* Capitalize subKey */}
+            {subValue}
+          </div>
+        );
+      });
+    } else if (Array.isArray(value)) {
+      formattedValue = value.join(", "); // For arrays, join the elements with commas
+    } else {
+      formattedValue = value.toString(); // Convert to string if it's a primitive value
+    }
+
+    return (
+      <p key={key} className="text-gray-700 leading-relaxed mt-4 ">
+        <span className="font-semibold text-black ">{formattedKey}: </span>
+        {formattedValue}
+      </p>
+    );
+  }
+
+  return null;
+})}
+
+
+              {/* Report Issue Button */}
+              {currentUser &&
+                (currentUser.role === "user" ||
+                  currentUser.role === "student" ||
+                  currentUser.role === "staff") && (
+                  <div className="flex justify-end">
+                    <button
+                      onClick={() => navigate(`/report-issue/${resource._id}`)}
+                      className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition duration-300 mt-4"
+                    >
+                      Report Issue
+                    </button>
+                  </div>
+                )}
+
+              {/* Admin Buttons */}
+              {currentUser &&
+                (currentUser.role === "Super Admin" ||
+                  currentUser.role === "Resource Admin") && (
+                  <div className="flex justify-end space-x-4 mt-12">
+                    <button
+                      onClick={() => navigate(`/edit-resource/${resource._id}`)}
+                      className="bg-yellow-500 text-white rounded-lg uppercase font-semibold hover:bg-yellow-600 shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 px-6 py-3"
+                    >
+                      <FaEdit className="inline mr-2" /> Edit
+                    </button>
+                    <button
+                      onClick={handleDelete}
+                      className="bg-red-500 text-white rounded-lg uppercase font-semibold hover:bg-red-600 shadow-lg hover:shadow-xl transform hover:scale-105 transition duration-300 px-6 py-3"
+                    >
+                      <FaTrash className="inline mr-2" /> Delete
+                    </button>
+                  </div>
+                )}
             </div>
           </div>
         </div>
@@ -198,3 +277,7 @@ const Resource = () => {
 };
 
 export default Resource;
+
+
+
+
