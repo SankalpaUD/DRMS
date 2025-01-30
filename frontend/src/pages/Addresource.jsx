@@ -3,7 +3,7 @@ import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-export default function AddResource() {
+export default function AddResource() { 
   const { currentUser } = useSelector((state) => state.user);
   const navigate = useNavigate();
   const [files, setFiles] = useState([]);
@@ -24,10 +24,13 @@ export default function AddResource() {
     brand: '',
     model: '',
     quantity: '',
+    additionalAttributes: {}, // New dynamic attributes
   });
   const [imageUploadError, setImageUploadError] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(false);
+  const [attributeName, setAttributeName] = useState('');
+  const [attributeValue, setAttributeValue] = useState('');
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -37,10 +40,17 @@ export default function AddResource() {
     });
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = (e) => { 
+    const selectedFiles = Array.from(e.target.files);
+    if (selectedFiles.length + formData.imageUrl.length > 6) {
+      setImageUploadError('You can only upload up to 6 images.');
+      return;
+    }
+    setFiles(selectedFiles);
+    const urls = selectedFiles.map(file => URL.createObjectURL(file));
     setFormData({
       ...formData,
-      imageUrl: e.target.files,
+      imageUrl: formData.imageUrl.concat(urls),
     });
   };
 
@@ -49,14 +59,16 @@ export default function AddResource() {
     const formDataToSend = new FormData();
     Object.keys(formData).forEach((key) => {
       if (key === 'imageUrl') {
-        for (let i = 0; i < formData.imageUrl.length; i++) {
-          formDataToSend.append('images', formData.imageUrl[i]);
-        }
+        files.forEach(file => {
+          formDataToSend.append('images', file);
+        })
+      } else if (key === 'additionalAttributes') {
+        formDataToSend.append('additionalAttributes', JSON.stringify(formData.additionalAttributes)); // Send as JSON string
       } else {
         formDataToSend.append(key, formData[key]);
       }
     });
-
+  
     try {
       await axios.post('/api/resource/add', formDataToSend, {
         headers: {
@@ -68,6 +80,30 @@ export default function AddResource() {
     } catch (error) {
       console.error('Error adding resource:', error);
     }
+  };
+  
+
+  const handleAddAttribute = (name, value) => {
+    if (name) {
+      setFormData((prev) => ({
+        ...prev,
+        additionalAttributes: {
+          ...prev.additionalAttributes,
+          [name]: value,
+        },
+      }));
+    }
+  };
+
+  const handleRemoveAttribute = (name) => {
+    setFormData((prev) => {
+      const updatedAttributes = { ...prev.additionalAttributes };
+      delete updatedAttributes[name];
+      return {
+        ...prev,
+        additionalAttributes: updatedAttributes,
+      };
+    });
   };
 
   return (
@@ -236,7 +272,57 @@ export default function AddResource() {
                 <span className="text-gray-700">Yes</span>
               </div>
             </div>
+            <div className="mb-4 ">
+            <h3 className="text-lg font-semibold">Add Dynamic Attributes</h3>
+            <div className="flex  flex-wrap gap-2 mb-4">
+              <input
+                type="text"
+                placeholder="Attribute Name"
+                value={attributeName}
+                onChange={(e) => setAttributeName(e.target.value)}
+                className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+              <input
+                type="text"
+                placeholder="Attribute Value"
+                value={attributeValue}
+                onChange={(e) => setAttributeValue(e.target.value)}
+                className="shadow appearance-none border rounded py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+              />
+              <button
+                type="button"
+                onClick={() => {
+                  handleAddAttribute(attributeName, attributeValue);
+                  setAttributeName('');
+                  setAttributeValue('');
+                }}
+                className="bg-blue-500 text-white px-4 py-2 rounded"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+          {Object.keys(formData.additionalAttributes).length > 0 && (
+            <div className="mb-4">
+              <h3 className="text-lg font-semibold">Additional Attributes</h3>
+              {Object.entries(formData.additionalAttributes).map(([key, value]) => (
+                <div key={key} className="flex items-center gap-2 mb-2">
+                  <span className="text-gray-700">
+                    {key}: {value}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveAttribute(key)}
+                    className="text-red-500"
+                  >
+                    Remove
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
           </>
+          
         )}
         {formData.resourceType === 'AssetResourceType' && (
           <>
@@ -326,3 +412,6 @@ export default function AddResource() {
     </div>
   );
 }
+
+
+

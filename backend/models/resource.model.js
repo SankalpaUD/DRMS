@@ -83,6 +83,12 @@ const premisesResourceSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  // Additional dynamic attributes
+  additionalAttributes: {
+    type: Map, // Key-value pairs for additional attributes
+    of: String,
+    default: {},
+  },
 });
 
 const assetResourceSchema = new mongoose.Schema({
@@ -109,3 +115,6 @@ const PremisesResourceType = Resource.discriminator('PremisesResourceType', prem
 const AssetResourceType = Resource.discriminator('AssetResourceType', assetResourceSchema);
 
 export { Resource, PremisesResourceType, AssetResourceType };
+
+
+
