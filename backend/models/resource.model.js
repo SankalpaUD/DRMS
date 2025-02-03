@@ -83,6 +83,14 @@ const premisesResourceSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  hasDesktopOrLaptop: {
+    type: Boolean,
+    default: false,
+  },
+  hasMicrophone: {
+    type: Boolean,
+    default: false,
+  },
   // Additional dynamic attributes
   additionalAttributes: {
     type: Map, // Key-value pairs for additional attributes
