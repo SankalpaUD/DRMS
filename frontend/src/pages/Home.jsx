@@ -95,7 +95,7 @@ export default function Home() {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 h-80 w-screen">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-12 p-12 h-96 w-screen">
             <WebComponents
               image={lms}
               title="LMS"

@@ -4,7 +4,7 @@ import {FaFacebook, FaGlobe, FaPhoneAlt, FaEnvelope, FaResearchgate } from 'reac
 function Footer({ isSidebarOpen }) {
   return (
     <footer
-    className={` ${
+    className={`transition-all duration-300 ${
       isSidebarOpen ? 'ml-56' : 'ml-0'
     }`}
   >

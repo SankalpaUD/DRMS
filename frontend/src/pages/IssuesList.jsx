@@ -40,6 +40,7 @@ const IssuesList = () => {
     : issues;
 
   return (
+    <div className="bg-slate-100 min-h-screen">
     <div className="container mx-auto px-12 py-8">
       <h1 className="text-2xl font-bold mb-4">Reported Issues</h1>
       <div className="mb-4">
@@ -80,12 +81,12 @@ const IssuesList = () => {
         <ul className="space-y-4">
           {filteredIssues.map((issue) => (
             <li key={issue._id} className="bg-white p-4 rounded-lg shadow">
-              <p><strong>Resource:</strong> {issue.resource.name}</p>
-              <p><strong>User:</strong> {issue.user.name}</p>
-              <p><strong>Type:</strong> {issue.type}</p>
-              <p><strong>Description:</strong> {issue.description}</p>
-              <p><strong>Status:</strong> {issue.status}</p>
-              <p><strong>Feedback:</strong> {issue.feedback || 'No feedback yet'}</p>
+                <p><strong>Resource:</strong> {issue.resource ? issue.resource.name : 'Resource has been deleted'}</p>
+                <p><strong>User:</strong> {issue.user ? issue.user.name : 'User not available'}</p>
+                <p><strong>Type:</strong> {issue.type || 'Type not specified'}</p>
+                <p><strong>Description:</strong> {issue.description || 'No description provided'}</p>
+                <p><strong>Status:</strong> {issue.status || 'Status not available'}</p>
+                <p><strong>Feedback:</strong> {issue.feedback || 'No feedback yet'}</p>
               {issue.status === 'Pending' && (
                 <Link to={`/issue-feedback/${issue._id}`} className="text-blue-500 hover:underline">Provide Feedback</Link>
               )}
@@ -95,6 +96,7 @@ const IssuesList = () => {
       ) : (
         <p>No issues reported.</p>
       )}
+    </div>
     </div>
   );
 };

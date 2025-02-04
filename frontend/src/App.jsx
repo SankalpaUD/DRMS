@@ -3,11 +3,11 @@ import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-route
 import Home from './pages/Home';
 import Signup from './pages/Signup';
 import Login from './pages/Login';
-import Navbar from './components/NavBar';
+import Navbar from './components/navbar';
 import Profile from './pages/Profile';
 import Sidebar from './components/SideBar';
 import PrivateRoute from './components/PrivateRoute';
-import Editprofile from './pages/Editprofile';
+import Editprofile from './pages/EditProfile';
 import AddResource from './pages/Addresource';
 import EditResource from './pages/EditResource'; 
 import AuthProvider from './context/AuthContext';
@@ -35,6 +35,8 @@ import EditFulfillStaff from './pages/EditFulfillStaff';
 import AddUser from './pages/AddUser';
 import ManageUsers from './pages/ManageUsers';
 import EditUser from './pages/EditUser';
+import ReservationLetter from './pages/ReservationLetter';
+import Setting from './pages/Setting';
 
 function MainApp() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -63,7 +65,7 @@ function MainApp() {
   const isLandingPage = location.pathname === '/';
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col bg-slate-100 min-h-screen">
       {!isLandingPage && <Sidebar isOpen={isSidebarOpen} toggleSidebar={toggleSidebar} />}
       <div className="flex-1 transition-all duration-300">
         {!isLandingPage && <Navbar toggleSidebar={toggleSidebar} />}
@@ -80,9 +82,11 @@ function MainApp() {
             <Route path="/request/:resourceId" element={<ResourceRequestForm />} />
             <Route path="/upgrade-request" element={<UpgradeRequestForm />} />
             <Route path="/bookings" element={<Bookings />} />
+            <Route path="/reservation-letter/:bookingId" element={<ReservationLetter />} />
             <Route path="/report-issue/:resourceId" element={<ReportIssue />} />
             <Route path="/issue-feedback/:id" element={<IssueFeedback />} />
-            <Route path="notifications" element={<Notification />} />
+            <Route path="/notifications" element={<Notification />} />
+            <Route path="/settings" element={<Setting />} />
 
             {/* Protected Routes */}
             <Route element={<PrivateRoute />}>

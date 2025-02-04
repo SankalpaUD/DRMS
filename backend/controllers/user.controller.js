@@ -20,10 +20,6 @@ export const updateUser = async (req, res, next) => {
     return next(errorHandler(401, 'You can only update your own account or you must be a Super Admin'));
   }
   try {
-    if (req.body.newPassword) {
-      req.body.password = await bcrypt.hash(req.body.newPassword, 10);
-    }
-
     let avatarUrl;
     if (req.file) {
       const streamUpload = (req) => {
@@ -183,5 +179,28 @@ export const getUpgradeRequestById = async (req, res, next) => {
     res.status(200).json(upgradeRequest);
   } catch (error) {
     next(error);
+  }
+};
+
+export const changePassword = async (req, res, next) => {
+  try {
+    const { currentPassword, newPassword } = req.body;
+    const user = await User.findById(req.params.id);
+
+    if (!user) {
+      return next(errorHandler(404, 'User not found'));
+    }
+
+    const isMatch = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatch) {
+      return next(errorHandler(400, 'Current password is incorrect'));
+    }
+
+    user.password = await bcrypt.hash(newPassword, 10);
+    await user.save();
+
+    res.status(200).json({ message: 'Password changed successfully' });
+  } catch (error) {
+    next(errorHandler(500, 'Error changing password'));
   }
 };

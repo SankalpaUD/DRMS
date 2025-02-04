@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import { updateProfile } from '../redux/user/userSlice';
 import axios from 'axios';
 
-export default function Editprofile() {
+export default function EditProfile() {
   const { currentUser } = useSelector((state) => state.user);
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -16,7 +16,6 @@ export default function Editprofile() {
   const [description, setDescription] = useState(currentUser.description || '');
   const [avatar, setAvatar] = useState(currentUser.avatar);
   const [selectedFile, setSelectedFile] = useState(null);
-  const [newPassword, setNewPassword] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,13 +28,6 @@ export default function Editprofile() {
     formData.append('description', description);
     if (selectedFile) {
       formData.append('avatar', selectedFile);
-    }
-    if (newPassword) {
-      formData.append('newPassword', newPassword);
-    }
-
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
     }
 
     try {
@@ -105,16 +97,6 @@ export default function Editprofile() {
                 className="p-2 border rounded-lg"
               />
             </div>
-          <div className="flex flex-col mb-6">
-            <label className="text-gray-700 font-semibold mb-2">Change Password</label>
-            <input
-              type="password"
-              value={newPassword}
-              placeholder="New Password"
-              onChange={(e) => setNewPassword(e.target.value)}
-              className="p-2 border rounded-lg"
-            />
-          </div>
           </div>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

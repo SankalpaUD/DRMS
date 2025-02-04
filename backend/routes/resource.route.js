@@ -2,7 +2,7 @@ import express from 'express';
 import { verify } from '../utils/verify.js';
 import upload from '../utils/multer.js';
 import { AddResource, getResources, updateResource, deleteResource, getResourceById, addTimetable, updateTimetable, deleteTimetable, getTimetables } from '../controllers/resource.controller.js';
-import { createRequest, getRequests, getRequestById, approveRequest, rejectRequest, deleteRequest, getUserBookings } from '../controllers/request.controller.js';
+import { createRequest, getRequests, getRequestById, approveRequest, rejectRequest, deleteRequest, getUserBookings, getUserBookingById } from '../controllers/request.controller.js';
 import { reportIssue, getIssues, provideFeedback } from '../controllers/issue.controller.js';
 import { addFulfillStaff, getAllFulfillStaff, updateFulfillStaff, deleteFulfillStaff } from '../controllers/fulfillstaff.controller.js';
 
@@ -12,6 +12,7 @@ router.post('/add', verify(['Super Admin', 'Resource Admin']), upload.array('ima
 router.get('/get', getResources);
 router.get('/get/:id', getResourceById);
 router.get('/getUserBookings', verify(['user', 'student', 'staff']), getUserBookings);
+router.get('/getUserBooking/:bookingId', verify(['user', 'student', 'staff']), getUserBookingById);
 router.put('/update/:id', upload.array('images', 6), verify(['Super Admin', 'Resource Admin']), updateResource);
 router.delete('/delete/:id', verify(['Super Admin', 'Resource Admin']), deleteResource);
 

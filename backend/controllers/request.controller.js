@@ -114,3 +114,17 @@ export const getUserBookings = async (req, res) => {
     res.status(500).json({ message: 'Error fetching user bookings', error });
   }
 };
+
+export const getUserBookingById = async (req, res) => {
+  const { bookingId } = req.params;
+
+  try {
+    const booking = await Request.findById(bookingId).populate('resource').populate('user');
+    if (!booking) {
+      return res.status(404).json({ message: 'Booking not found' });
+    }
+    res.status(200).json(booking);
+  } catch (error) {
+    res.status(500).json({ message: 'Error fetching booking details', error });
+  }
+};

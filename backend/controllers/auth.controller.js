@@ -3,6 +3,11 @@ import bcryptjs from 'bcryptjs';
 import { errorHandler } from '../utils/error.js';
 import jwt from 'jsonwebtoken';
 
+const getClientIp = (req) => {
+  const xForwardedFor = req.headers['x-forwarded-for'];
+  return xForwardedFor ? xForwardedFor.split(',')[0] : req.connection.remoteAddress;
+};
+
 export const signup = async (req, res, next) => {
   const { name, email, password } = req.body;
 
@@ -46,6 +51,10 @@ export const login = async (req, res, next) => {
       return next(errorHandler(400, 'Wrong credentials!'));
     }
 
+    user.lastLogin = new Date();
+    user.loginIP = getClientIp(req);
+    await user.save();
+
     const token = jwt.sign({ id: user._id, role: user.role}, process.env.JWT_SECRET, { expiresIn: '1h' });
 
     const { password: userPassword, ...userWithoutPassword } = user._doc;
@@ -67,6 +76,8 @@ export const google = async (req, res, next) => {
   try {
     const user = await User.findOne({ email });
     if (user) {
+      user.lastLogin = new Date();
+      user.loginIP = getClientIp(req);
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
       const { password: userPassword, ...userWithoutPassword } = user._doc;
 
@@ -82,7 +93,10 @@ export const google = async (req, res, next) => {
         email,
         password: hashpassword,
         avatar: googlePhotoUrl,
+        lastLogin: new Date(),
+        loginIP: getClientIp(req),
       });
+      
       await newUser.save();
       const token = jwt.sign({ id: newUser._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
       const { password: userPassword, ...userWithoutPassword } = newUser._doc;
