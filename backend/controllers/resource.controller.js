@@ -148,16 +148,33 @@ export const getResources = async (req, res, next) => {
 
 export const updateResource = async (req, res, next) => {
   const { id } = req.params;
-  const updates = req.body;
+
+  const handleTimetable = (timetableInput) => {
+    try {
+      if (!timetableInput) return [];
+      if (Array.isArray(timetableInput)) return timetableInput;
+      if (typeof timetableInput === 'string') {
+        return timetableInput.trim() === '' ? [] : JSON.parse(timetableInput);
+      }
+      return [];
+    } catch (error) {
+      console.error('Timetable parse error:', error);
+      return [];
+    }
+  };
 
   try {
+    const resource = await Resource.findById(id);
+    if (!resource) {
+      return res.status(404).json({ message: "Resource not found" });
+    }
+
     // Handle file uploads
-    if (req.files && req.files.length > 0) {
-      const imageUrls = [];
-      const uploadPromises = req.files.map((file) =>
+    if (req.files?.length > 0) {
+      const uploadPromises = req.files.map(file => 
         new Promise((resolve, reject) => {
           const stream = cloudinary.uploader.upload_stream(
-            { folder: "resources", overwrite: true },
+            { folder: "resources" },
             (error, result) => {
               if (result) resolve(result.secure_url);
               else reject(error);
@@ -166,29 +183,74 @@ export const updateResource = async (req, res, next) => {
           stream.end(file.buffer);
         })
       );
-      const results = await Promise.all(uploadPromises);
-      updates.imageUrl = results; // Update the imageUrls
+      const newImages = await Promise.all(uploadPromises);
+      resource.imageUrl = [...resource.imageUrl, ...newImages].slice(0, 6);
     }
 
-    // Handle dynamic `additionalAttributes`
-    if (updates.additionalAttributes) {
-      updates.additionalAttributes =
-        typeof updates.additionalAttributes === "string"
-          ? JSON.parse(updates.additionalAttributes)
-          : updates.additionalAttributes;
+    // Handle updates based on resource type
+    if (resource.resourceType === 'PremisesResourceType') {
+      const premisesResource = await PremisesResourceType.findById(id);
+      
+      // Update premises-specific fields
+      premisesResource.premiType = req.body.premiType || premisesResource.premiType;
+      premisesResource.capacity = req.body.capacity || premisesResource.capacity;
+      premisesResource.isAC = req.body.isAC ?? premisesResource.isAC;
+      premisesResource.hasWhiteboard = req.body.hasWhiteboard ?? premisesResource.hasWhiteboard;
+      premisesResource.hasProjector = req.body.hasProjector ?? premisesResource.hasProjector;
+      premisesResource.hasDesktopOrLaptop = req.body.hasDesktopOrLaptop ?? premisesResource.hasDesktopOrLaptop;
+      premisesResource.hasMicrophone = req.body.hasMicrophone ?? premisesResource.hasMicrophone;
+
+      // Handle additionalAttributes
+      if (req.body.additionalAttributes) {
+        const newAttributes = typeof req.body.additionalAttributes === 'string'
+          ? JSON.parse(req.body.additionalAttributes)
+          : req.body.additionalAttributes;
+        
+        premisesResource.additionalAttributes = new Map(Object.entries(newAttributes));
+      }
+
+      // Update common fields
+      premisesResource.name = req.body.name || premisesResource.name;
+      premisesResource.description = req.body.description || premisesResource.description;
+      premisesResource.availability = req.body.availability ?? premisesResource.availability;
+
+      // Handle timetable conversion
+      premisesResource.timetable = req.body.timetable
+        ? Array.isArray(req.body.timetable) 
+          ? req.body.timetable 
+          : JSON.parse(req.body.timetable)
+        : [];
+
+      await premisesResource.validate();
+      const updatedResource = await premisesResource.save();
+      return res.status(200).json({ success: true, resource: updatedResource });
+    }
+    else if (resource.resourceType === 'AssetResourceType') {
+      const assetResource = await AssetResourceType.findById(id);
+      
+      // Update asset-specific fields
+      assetResource.assetType = req.body.assetType || assetResource.assetType;
+      assetResource.brand = req.body.brand || assetResource.brand;
+      assetResource.model = req.body.model || assetResource.model;
+      assetResource.quantity = req.body.quantity || assetResource.quantity;
+
+      // Update common fields
+      assetResource.name = req.body.name || assetResource.name;
+      assetResource.description = req.body.description || assetResource.description;
+      assetResource.availability = req.body.availability ?? assetResource.availability;
+
+      // Handle timetable conversion for assets
+      assetResource.timetable = handleTimetable(req.body.timetable);
+
+      await assetResource.validate();
+      const updatedResource = await assetResource.save();
+      return res.status(200).json({ success: true, resource: updatedResource });
     }
 
-    // Update the resource in the database
-    const updatedResource = await Resource.findByIdAndUpdate(id, updates, {
-      new: true,
-    });
-    if (!updatedResource) {
-      return res.status(404).json({ message: "Resource not found" });
-    }
+    return res.status(400).json({ message: "Invalid resource type" });
 
-    res.status(200).json({ success: true, resource: updatedResource });
   } catch (error) {
-    console.error("Error in updateResource:", error);
+    console.error("Update error:", error);
     next(error);
   }
 };
