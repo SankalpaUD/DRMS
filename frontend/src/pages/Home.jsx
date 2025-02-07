@@ -63,7 +63,7 @@ export default function Home() {
                 <div className="grow shrink basis-0 flex-col justify-start items-start gap-8 inline-flex overflow-hidden">
                   <img className="self-stretch h-60 rounded-3xl shadow-lg" src={analysis}alt="Comprehensive Resource Management" />
                   <div className="self-stretch h-auto flex-col justify-start items-center gap-6 flex">
-                    <div className="self-stretch text-center text-black text-2xl font-bold leading-tight">Comprehensive Resource Management Solutions</div>
+                    <div className="self-stretch text-center text-black text-2xl font-bold leading-tight"><Link to="/analysis" className='hover:underline'>Comprehensive Resource Management Solutions </Link></div>
                     <div className="self-stretch text-center text-black text-base font-normal leading-normal">Manage all your departmental resources in one place.</div>
                   </div>
                 </div>
