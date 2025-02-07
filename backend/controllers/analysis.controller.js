@@ -24,23 +24,23 @@ export const getMostBookedResources = async (req, res) => {
 export const getMostReportedIssues = async (req, res) => {
   try {
     const issues = await Issue.find().sort({ createdAt: -1 }).limit(10);
-    console.log('Fetched Issues:', issues); // Debugging statement
+   
 
     const resourceIds = issues.map(issue => issue.resource);
     const resources = await Resource.find({ _id: { $in: resourceIds } });
-    console.log('Fetched Resources:', resources); // Debugging statement
+   
 
     const resourceMap = resources.reduce((map, resource) => {
       map[resource._id.toString()] = resource.name;
       return map;
     }, {});
-    console.log('Resource Map:', resourceMap); // Debugging statement
+    
 
     const issuesWithResourceNames = issues.map(issue => ({
       ...issue.toObject(),
       resourceName: resourceMap[issue.resource.toString()] || 'Unknown Resource'
     }));
-    console.log('Issues with Resource Names:', issuesWithResourceNames); // Debugging statement
+   
 
     res.json(issuesWithResourceNames);
   } catch (error) {
