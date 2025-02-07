@@ -37,6 +37,7 @@ import ManageUsers from './pages/ManageUsers';
 import EditUser from './pages/EditUser';
 import ReservationLetter from './pages/ReservationLetter';
 import Setting from './pages/Setting';
+import Analysis from './pages/Analysis';
 
 function MainApp() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -87,6 +88,7 @@ function MainApp() {
             <Route path="/issue-feedback/:id" element={<IssueFeedback />} />
             <Route path="/notifications" element={<Notification />} />
             <Route path="/settings" element={<Setting />} />
+            <Route path="/analysis" element={<Analysis />} />
 
             {/* Protected Routes */}
             <Route element={<PrivateRoute />}>
