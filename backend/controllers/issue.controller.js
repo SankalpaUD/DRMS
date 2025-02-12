@@ -2,23 +2,27 @@ import Issue from '../models/issue.model.js';
 import Notification from '../models/notification.model.js';
 
 export const reportIssue = async (req, res) => {
-    try {
-      const { resourceId, type, description } = req.body;
-      const userId = req.user._id;
-  
-      const newIssue = new Issue({
-        resource: resourceId,
-        user: userId,
-        type,
-        description,
-      });
-  
-      await newIssue.save();
-      res.status(201).json({ message: 'Issue reported successfully', issue: newIssue });
-    } catch (error) {
-      res.status(500).json({ message: 'Error reporting issue', error });
-    }
-  };
+  try {
+    const { resourceId, type, subType, description, severity, reportedBy, contactInfo } = req.body;
+    const userId = req.user._id;
+
+    const newIssue = new Issue({
+      resource: resourceId,
+      user: userId,
+      type,
+      subType,
+      description,
+      severity,
+      reportedBy,
+      contactInfo,
+    });
+
+    await newIssue.save();
+    res.status(201).json({ message: 'Issue reported successfully', issue: newIssue });
+  } catch (error) {
+    res.status(500).json({ message: 'Error reporting issue', error });
+  }
+};
   
   export const getIssues = async (req, res) => {
     try {

@@ -13,12 +13,12 @@ const issueSchema = new mongoose.Schema({
   },
   type: { 
     type: String, 
-    enum: ['Damage', 'Maintenance', 'Broken', 'Update', 'Other'], 
+    enum: ['damage', 'maintenance', 'broken', 'update', 'other'], 
     required: true 
   },
   subType: { 
     type: String, 
-    enum: ['Physical', 'Water', 'Electrical', 'Routine', 'Emergency', 'Preventive', 'Other'], 
+    enum: ['physical', 'water', 'electrical', 'routine', 'emergency', 'preventive', 'Other'], 
     required: false 
   },
   description: { 
@@ -27,7 +27,7 @@ const issueSchema = new mongoose.Schema({
   },
   severity: { 
     type: String, 
-    enum: ['Low', 'Medium', 'High', 'Critical'], 
+    enum: ['low', 'medium', 'high', 'critical'], 
     required: true 
   },
   reportedBy: { 

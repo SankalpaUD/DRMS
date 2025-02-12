@@ -34,7 +34,7 @@ const ReportIssue = () => {
     try {
       const token = localStorage.getItem('token'); // Assuming token is stored in localStorage
       await axios.post(
-        '/api/resource/report-issue',
+        '/api/resource/reportIssue',
         {
           resourceId,
           type,
