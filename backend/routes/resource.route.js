@@ -5,6 +5,7 @@ import { AddResource, getResources, updateResource, deleteResource, getResourceB
 import { createRequest, getRequests, getRequestById, approveRequest, rejectRequest, deleteRequest, getUserBookings, getUserBookingById } from '../controllers/request.controller.js';
 import { reportIssue, getIssues, provideFeedback } from '../controllers/issue.controller.js';
 import { addFulfillStaff, getAllFulfillStaff, updateFulfillStaff, deleteFulfillStaff } from '../controllers/fulfillstaff.controller.js';
+import { createNotice, getNotices,deleteNotice } from '../controllers/notice.controller.js';
 
 const router = express.Router();
 
@@ -37,5 +38,8 @@ router.post('/addFulfillstaff', verify(['Super Admin', 'Fulfillment Admin']), ad
 router.get('/getFulfillstaffs', verify(['Super Admin', 'Fulfillment Admin']), getAllFulfillStaff);
 router.put('/updateFulfillstaff/:id', verify(['Super Admin', 'Fulfillment Admin']), updateFulfillStaff);
 router.delete('/deleteFulfillstaff/:id', verify(['Super Admin', 'Fulfillment Admin']), deleteFulfillStaff);
+
+router.post('/notices', verify(['Super Admin', 'Resource Admin']), createNotice); // Only Resource Admin and Super admin can create
+router.delete('/notices/:id', verify(['Super Admin', 'Resource Admin']), deleteNotice);
 
 export default router;

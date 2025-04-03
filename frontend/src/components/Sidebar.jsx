@@ -44,7 +44,7 @@ const Sidebar = ({ isOpen }) => {
           <p className="text-white text-lg font-semibold">{currentUser.name}</p>
         </div>
       )}
-      <nav className="flex flex-col w-full pr-4">
+      <nav className="flex flex-col w-full pr-4 overflow-y-auto h-full scrollbar-hide">
         <Link 
           to="/profile" 
           className={getLinkClass('/profile')}
@@ -70,6 +70,12 @@ const Sidebar = ({ isOpen }) => {
             className={getLinkClass('/timetable-management')}
             >
               <FaTable className="mr-2" /> Manage Timetable
+          </Link>
+                <Link 
+            to="/upload-notice" 
+            className={getLinkClass('/upload-notice')}
+          >
+            <FaPlus className="mr-2" /> Upload Notice
           </Link>
           </>
         )}
@@ -115,6 +121,16 @@ const Sidebar = ({ isOpen }) => {
         >
           <FaCalendarAlt className="mr-2" /> Bookings
         </Link>
+        {currentUser && (currentUser.role === 'Super Admin' || currentUser.role === 'Resource Admin' || currentUser.role === 'user') && (
+         
+         <Link 
+           to="/notices" 
+           className={getLinkClass('/notices')}
+         >
+           <FaClipboardList className="mr-2" /> View Notices
+         </Link>
+       
+        )}
         <Link 
           to="/settings" 
           className={getLinkClass('/settings')}
@@ -138,6 +154,7 @@ const Sidebar = ({ isOpen }) => {
             <FaArrowUp className="mr-2" /> Upgrade Account
           </Link>
         )}
+       
       </nav>
     </div>
   );
