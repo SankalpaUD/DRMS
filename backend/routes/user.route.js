@@ -3,6 +3,7 @@ import upload from '../utils/multer.js';
 import { verify } from '../utils/verify.js';
 import { getAllUsers, updateUser, deleteUser, createUpgradeRequest, approveUpgradeRequest, getAllUpgradeRequests, getUpgradeRequestById, changePassword } from '../controllers/user.controller.js';
 import { getNotifications, markAsRead } from '../controllers/notification.controller.js';
+import { getNotices } from '../controllers/notice.controller.js';
 
 const router = express.Router();
 
@@ -22,5 +23,8 @@ router.get('/upgrade-requests/:requestId', verify(['Super Admin', 'Acceptance Ad
 // Notification routes
 router.get('/notifications/:userId', verify(), getNotifications);
 router.put('/notifications/markAsRead/:id', verify(), markAsRead);
+
+//notices routes
+router.get('/notices', verify(['Super Admin', 'Resource Admin', 'user']), getNotices);
 
 export default router;

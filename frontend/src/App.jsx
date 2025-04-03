@@ -38,6 +38,8 @@ import EditUser from './pages/EditUser';
 import ReservationLetter from './pages/ReservationLetter';
 import Setting from './pages/Setting';
 import Analysis from './pages/Analysis';
+import NoticeUpload from './pages/NoticeUpload';
+import NoticeDisplay from './pages/NoticeDisplay';
 
 function MainApp() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -87,8 +89,9 @@ function MainApp() {
             <Route path="/report-issue/:resourceId" element={<ReportIssue />} />
             <Route path="/issue-feedback/:id" element={<IssueFeedback />} />
             <Route path="/notifications" element={<Notification />} />
+            <Route path="/notices" element={<NoticeDisplay />} />
             <Route path="/settings" element={<Setting />} />
-            <Route path="/analysis" element={<Analysis />} />
+            <Route path="/analysis" element={<Analysis />} /> 
 
             {/* Protected Routes */}
             <Route element={<PrivateRoute />}>
@@ -105,6 +108,7 @@ function MainApp() {
               <Route path="/edit-resource/:id" element={<EditResource />} />
               <Route path="/issues" element={<IssuesList />} />
               <Route path="/timetable-management" element={<TimetableManagement />} />
+              <Route path="/upload-notice" element={<NoticeUpload />} />
             </Route>
             <Route element={<PrivateRoute roles={['Super Admin', 'Acceptance Admin']} />}>
               <Route path="/admin/upgrade-requests" element={<AdminUpgradeRequests />} />
