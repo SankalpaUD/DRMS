@@ -19,7 +19,8 @@ const issueSchema = new mongoose.Schema({
   subType: { 
     type: String, 
     enum: ['physical', 'water', 'electrical', 'routine', 'emergency', 'preventive', 'Other'], 
-    required: false 
+    required: false,
+    default: null, 
   },
   description: { 
     type: String, 
@@ -30,6 +31,10 @@ const issueSchema = new mongoose.Schema({
     enum: ['low', 'medium', 'high', 'critical'], 
     required: true 
   },
+  images: [{ 
+    type: String, 
+    required: false 
+  }],
   reportedBy: { 
     type: String, 
     required: true 

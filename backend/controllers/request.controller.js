@@ -1,5 +1,6 @@
 import { Resource } from '../models/resource.model.js';
 import Request from '../models/requesting.model.js';
+import Notification from '../models/notification.model.js'; // Import Notification model
 
 export const createRequest = async (req, res, next) => {
   const { resource, requestDate, takenTime, handoverTime, reason, additionalDetails, userRole, userDetails } = req.body;
@@ -68,10 +69,17 @@ export const getRequestById = async (req, res) => {
 export const approveRequest = async (req, res) => {
   const { id } = req.params;
   try {
-    const request = await Request.findByIdAndUpdate(id, { status: 'approved' }, { new: true });
+    const request = await Request.findByIdAndUpdate(id, { status: 'approved' }, { new: true }).populate('user resource');
     if (!request) {
       return res.status(404).json({ message: 'Request not found' });
     }
+
+    // Create a notification for the user
+    await Notification.create({
+      user: request.user._id, // User ID from the request
+      message: `Your booking for the resource "${request.resource.name}" has been approved.`,
+    });
+
     res.status(200).json(request);
   } catch (error) {
     res.status(500).json({ message: 'Error approving request', error });
@@ -81,10 +89,17 @@ export const approveRequest = async (req, res) => {
 export const rejectRequest = async (req, res) => {
   const { id } = req.params;
   try {
-    const request = await Request.findByIdAndUpdate(id, { status: 'rejected' }, { new: true });
+    const request = await Request.findByIdAndUpdate(id, { status: 'rejected' }, { new: true }).populate('user resource');
     if (!request) {
       return res.status(404).json({ message: 'Request not found' });
     }
+
+    // Create a notification for the user
+    await Notification.create({
+      user: request.user._id, // User ID from the request
+      message: `Your booking for the resource "${request.resource.name}" has been rejected.`,
+    });
+
     res.status(200).json(request);
   } catch (error) {
     res.status(500).json({ message: 'Error rejecting request', error });

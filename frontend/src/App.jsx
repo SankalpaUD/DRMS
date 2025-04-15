@@ -38,6 +38,7 @@ import EditUser from './pages/EditUser';
 import ReservationLetter from './pages/ReservationLetter';
 import Setting from './pages/Setting';
 import Analysis from './pages/Analysis';
+import Report from './pages/Report';
 
 function MainApp() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -89,6 +90,7 @@ function MainApp() {
             <Route path="/notifications" element={<Notification />} />
             <Route path="/settings" element={<Setting />} />
             <Route path="/analysis" element={<Analysis />} />
+            <Route path="/report" element={<Report />} />
 
             {/* Protected Routes */}
             <Route element={<PrivateRoute />}>

@@ -1,34 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
-const ReportIssue = () => {
-  const { resourceId } = useParams();
+const Report = () => {
   const navigate = useNavigate();
   const { currentUser } = useSelector((state) => state.user);
-  const [resource, setResource] = useState(null);
+  const [resources, setResources] = useState([]); // List of resources
+  const [selectedResource, setSelectedResource] = useState(''); // Selected resource
   const [type, setType] = useState('');
   const [description, setDescription] = useState('');
   const [severity, setSeverity] = useState('');
   const [reportedBy, setReportedBy] = useState(currentUser?.name || '');
   const [contactInfo, setContactInfo] = useState(currentUser?.email || '');
   const [message, setMessage] = useState('');
-  const [subType, setSubType] = useState('');
+  const [subType, setSubType] = useState(''); // Default value for subType
   const [images, setImages] = useState([]); // State for uploaded images
 
+  // Fetch resources from the backend
   useEffect(() => {
-    const fetchResource = async () => {
+    const fetchResources = async () => {
       try {
-        const response = await axios.get(`/api/resource/get/${resourceId}`);
-        setResource(response.data);
+        const token = localStorage.getItem('token');
+        const response = await axios.get('/api/resource/get', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        setResources(response.data); // Assuming the API returns an array of resources
       } catch (error) {
-        console.error('Error fetching resource:', error);
+        console.error('Error fetching resources:', error);
       }
     };
 
-    fetchResource();
-  }, [resourceId]);
+    fetchResources();
+  }, []);
 
   const handleImageUpload = (e) => {
     const files = Array.from(e.target.files);
@@ -38,10 +42,18 @@ const ReportIssue = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // Validate subType if required
+    if ((type === 'damage' || type === 'maintenance') && !subType) {
+      setMessage('Please select a valid subType for the selected issue type.');
+      return;
+    }
+
     const formData = new FormData();
-    formData.append('resourceId', resourceId);
+    formData.append('resourceId', selectedResource);
     formData.append('type', type);
-    formData.append('subType', subType);
+    if (subType) {
+      formData.append('subType', subType); // Only append subType if it has a valid value
+    }
     formData.append('description', description);
     formData.append('severity', severity);
     formData.append('reportedBy', reportedBy);
@@ -68,13 +80,30 @@ const ReportIssue = () => {
 
   return (
     <div className="container mx-auto px-4 py-8">
-      <h1 className="text-3xl font-bold mb-4">Report Issue</h1>
-      {resource && (
-        <div className="mb-4">
-          <h2 className="text-2xl font-semibold">{resource.name}</h2>
-        </div>
-      )}
+      <h1 className="text-3xl font-bold mb-4">Report an Issue</h1>
+      {message && <p className="text-green-500">{message}</p>}
       <form onSubmit={handleSubmit}>
+        <div className="mb-4">
+          <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="resource">
+            Select Resource
+          </label>
+          <select
+            id="resource"
+            name="resource"
+            value={selectedResource}
+            onChange={(e) => setSelectedResource(e.target.value)}
+            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
+            required
+          >
+            <option value="">Select a Resource</option>
+            {resources.map((resource) => (
+              <option key={resource._id} value={resource._id}>
+                {resource.name}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <div className="mb-4">
           <label className="block text-gray-700 text-sm font-bold mb-2" htmlFor="type">
             Issue Type
@@ -107,7 +136,6 @@ const ReportIssue = () => {
               value={subType}
               onChange={(e) => setSubType(e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
             >
               <option value="">Select Damage Type</option>
               <option value="physical">Physical</option>
@@ -129,7 +157,6 @@ const ReportIssue = () => {
               value={subType}
               onChange={(e) => setSubType(e.target.value)}
               className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-              required
             >
               <option value="">Select Maintenance Type</option>
               <option value="routine">Routine</option>
@@ -226,4 +253,4 @@ const ReportIssue = () => {
   );
 };
 
-export default ReportIssue;
+export default Report;

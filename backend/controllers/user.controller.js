@@ -3,6 +3,7 @@ import User from '../models/user.model.js';
 import UpgradeRequest from '../models/upgradeReq.model.js';
 import cloudinary from '../utils/cloudinary.js';
 import { errorHandler } from '../utils/error.js';
+import Notification from '../models/notification.model.js'; // Import Notification model
 
 // Get all users
 export const getAllUsers = async (req, res, next) => {
@@ -125,7 +126,7 @@ export const createUpgradeRequest = async (req, res, next) => {
 export const approveUpgradeRequest = async (req, res, next) => {
   const { requestId, status, role, idNumber, idName } = req.body;
   try {
-    const upgradeRequest = await UpgradeRequest.findById(requestId);
+    const upgradeRequest = await UpgradeRequest.findById(requestId).populate('userId', 'name email');
     if (!upgradeRequest) {
       return res.status(404).json({ message: 'Upgrade request not found' });
     }
@@ -147,11 +148,22 @@ export const approveUpgradeRequest = async (req, res, next) => {
         return res.status(404).json({ message: 'User not found' });
       }
 
-      // Fetch the updated user to ensure idDetails are included
-      const user = await User.findById(upgradeRequest.userId);
-      res.status(200).json(user);
+      // Create a notification for the user
+      await Notification.create({
+        user: upgradeRequest.userId, // User ID from the upgrade request
+        message: `Your upgrade request to the role "${role || upgradeRequest.requestedRole}" has been approved.`,
+      });
+
+      res.status(200).json(updatedUser);
     } else {
       await User.findByIdAndUpdate(upgradeRequest.userId, { upgradeRequestStatus: 'rejected' }, { new: true, useFindAndModify: false });
+
+      // Create a notification for the user
+      await Notification.create({
+        user: upgradeRequest.userId, // User ID from the upgrade request
+        message: `Your upgrade request to the role "${upgradeRequest.requestedRole}" has been rejected.`,
+      });
+
       res.status(200).json({ message: `Upgrade request ${status}` });
     }
   } catch (error) {

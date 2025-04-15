@@ -23,7 +23,7 @@ router.put('/approveRequest/:id', verify(['Super Admin', 'Acceptance Admin']), a
 router.put('/rejectRequest/:id', verify(['Super Admin', 'Acceptance Admin']), rejectRequest);
 router.delete('/deleteRequest/:id', verify(['Super Admin', 'Acceptance Admin']), deleteRequest);
 
-router.post('/reportIssue', verify(['user', 'student', 'staff']), reportIssue);
+router.post('/reportIssue', verify(['user', 'student', 'staff']), upload.array('images', 5), reportIssue);
 router.get('/getIssues', verify(['Super Admin', 'Resource Admin']), getIssues);
 router.put('/provideFeedback/:id', verify(['Super Admin', 'Resource Admin']), provideFeedback);
 
