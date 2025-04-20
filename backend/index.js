@@ -6,6 +6,7 @@ import authRoute from './routes/auth.route.js';
 import resourceRoute from './routes/resource.route.js';
 import cookieParser from 'cookie-parser';
 import analysisRoute from './routes/analysis.route.js';
+import chatbotRoute from './routes/chatbot.route.js';
 
 dotenv.config();
 
@@ -26,6 +27,7 @@ app.use('/api/user', userRoute);
 app.use('/api/auth', authRoute);
 app.use('/api/resource', resourceRoute);
 app.use('/api/analysis', analysisRoute);
+app.use('/api/chatbot', chatbotRoute);
 
 app.use((err, req, res, next) => {
     const statusCode = err.statusCode || 500;

@@ -93,6 +93,7 @@ function MainApp() {
             <Route path="/notices" element={<NoticeDisplay />} />
             <Route path="/settings" element={<Setting />} />
             <Route path="/analysis" element={<Analysis />} />
+            <Route path="/report" element={<Report />} />
 
             {/* Protected Routes */}
             <Route element={<PrivateRoute />}>
@@ -126,6 +127,15 @@ function MainApp() {
         </div>
       </div>
       {!isLandingPage && <Footer isSidebarOpen={isSidebarOpen} />}
+      {!isLandingPage && (
+        <df-messenger
+          intent="WELCOME"
+          chat-title="ResourceFlow Assistant"
+          agent-id="3f2b4978-ae27-46d8-a192-8291ee5ad9a7"
+          language-code="en"
+          chat-icon="src/assets/icon.gif"
+        ></df-messenger>
+      )}
     </div>
   );
 }

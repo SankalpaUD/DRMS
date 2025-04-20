@@ -37,7 +37,7 @@ export default function Home() {
                     Streamline Your Resource Allocation with ResourceFlow
                   </div>
                   <div className="self-stretch text-black text-lg font-normal leading-relaxed">
-                    Our resource management system simplifies the way departments handle bookings and resources. With intuitive tools for managing requests and tracking availability, efficiency is just a click away.
+                    Department resource management system simplifies the way departments handle bookings and resources. With intuitive tools for managing requests and tracking availability, efficiency is just a click away.
                   </div>
                 </div>
                 <div className="self-stretch h-auto flex-col justify-start items-start gap-4 flex">
@@ -110,7 +110,7 @@ export default function Home() {
               </div>
               <div className="self-stretch h-auto flex-col justify-start items-center gap-6 flex">
                 <div className="self-stretch text-center text-black text-5xl font-bold leading-tight">Effortless Resource Allocation for Everyone</div>
-                <div className="self-stretch text-center text-black text-lg font-normal leading-relaxed">Our system simplifies resource management for students, academic staff, and administrators alike. Experience seamless booking and reporting tools designed to enhance your productivity.</div>
+                <div className="self-stretch text-center text-black text-lg font-normal leading-relaxed">Simplifies resource management for students, academic staff, and administrators alike. Experience seamless booking and reporting tools designed to enhance your productivity.</div>
               </div>
             </div>
             <div className="self-stretch h-auto flex-col justify-start items-start gap-16 flex">
