@@ -9,20 +9,17 @@ export const handleWebhook = async (req, res) => {
 
         try {
             if (!participants) {
-                // If participants are not provided, ask for the number of participants
                 return res.json({
                     fulfillmentText: 'How many participants will be attending?',
                 });
             }
 
-            // Query for suitable premises resources
             const suitableResources = await Resource.find({
-                resourceType: 'PremisesResourceType', // Only premises resources
-                premiType: { $ne: 'Computer Lab' }, // Exclude Computer Labs
-                capacity: { $gte: participants }, // Capacity greater than or equal to participants
-                availability: true, // Must be available
-            }).sort({ capacity: 1 }); // Sort by capacity (smallest first)
-
+                resourceType: 'PremisesResourceType', 
+                premiType: { $ne: 'Computer Lab' }, 
+                capacity: { $gte: participants }, 
+                availability: true, 
+            }).sort({ capacity: 1 }); 
             if (suitableResources.length > 0) {
                 // Find the closest capacity to the number of participants
                 const closestResource = suitableResources[0];
@@ -49,7 +46,7 @@ export const handleWebhook = async (req, res) => {
 
             // Apply filters based on parameters
             if (searchTerm) {
-                query.name = { $regex: searchTerm, $options: 'i' }; // Case-insensitive search
+                query.name = { $regex: searchTerm, $options: 'i' }; 
             }
             if (type) {
                 query.type = type;

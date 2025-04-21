@@ -1,7 +1,7 @@
 import express from 'express';
 import upload from '../utils/multer.js';
 import { verify } from '../utils/verify.js';
-import { getAllUsers, updateUser, deleteUser, createUpgradeRequest, approveUpgradeRequest, getAllUpgradeRequests, getUpgradeRequestById, changePassword } from '../controllers/user.controller.js';
+import { getAllUsers, updateUser, updateUser2, deleteUser, deleteUser2, createUpgradeRequest, approveUpgradeRequest, getAllUpgradeRequests, getUpgradeRequestById, changePassword } from '../controllers/user.controller.js';
 import { getNotifications, markAsRead } from '../controllers/notification.controller.js';
 import { getNotices } from '../controllers/notice.controller.js';
 
@@ -10,7 +10,9 @@ const router = express.Router();
 // User management routes
 router.get('/getusers', verify(['Super Admin']), getAllUsers);
 router.put('/updateuser/:id', verify(['Super Admin', 'User']), upload.single('avatar'), updateUser);
+router.put('/updateuser2/:id', verify(), upload.single('avatar'), updateUser2);
 router.delete('/deleteuser/:id', verify(['Super Admin', 'User']), deleteUser);
+router.delete('/delete/:id', verify(), deleteUser2);
 router.post('/change-password/:id', verify(), changePassword);
 
 // Upgrade request routes

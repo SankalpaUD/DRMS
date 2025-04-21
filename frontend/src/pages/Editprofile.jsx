@@ -16,9 +16,21 @@ export default function EditProfile() {
   const [description, setDescription] = useState(currentUser.description || '');
   const [avatar, setAvatar] = useState(currentUser.avatar);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (!name.trim()) {
+      alert('Name is required');
+      return;
+    }
+    if (!email.trim() || !/\S+@\S+\.\S+/.test(email)) {
+      alert('A valid email is required');
+      return;
+    }
+
+    setIsSubmitting(true);
 
     const formData = new FormData();
     formData.append('name', name);
@@ -31,7 +43,7 @@ export default function EditProfile() {
     }
 
     try {
-      const response = await axios.post(`/api/user/update/${currentUser._id}`, formData, {
+      const response = await axios.put(`/api/user/updateuser2/${currentUser._id}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${currentUser.access_token}`,
@@ -43,12 +55,23 @@ export default function EditProfile() {
       navigate('/profile');
     } catch (error) {
       console.error('Error updating profile', error);
+      alert('Failed to update profile. Please try again.');
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   const handleAvatarChange = (e) => {
     const file = e.target.files[0];
     if (file) {
+      if (!file.type.startsWith('image/')) {
+        alert('Please upload a valid image file');
+        return;
+      }
+      if (file.size > 2 * 1024 * 1024) {
+        alert('File size should not exceed 2MB');
+        return;
+      }
       setSelectedFile(file);
       const reader = new FileReader();
       reader.onloadend = () => {
@@ -64,22 +87,29 @@ export default function EditProfile() {
       <form className="bg-white shadow-md rounded-lg p-6 w-full max-w-4xl" onSubmit={handleSubmit}>
         <div className="mb-6">
           <div className="flex items-center mb-6">
-            <label className="text-gray-700 font-semibold mb-2 mr-16">Image</label>
+            <label htmlFor="avatar" className="text-gray-700 font-semibold mb-2 mr-16">Image</label>
             <div className="flex flex-col items-center">
               <img
-                src={avatar}
+                src={avatar || 'https://via.placeholder.com/150'}
                 alt="Profile"
                 className="w-20 h-20 rounded-full shadow-lg mb-2"
               />
             </div>
             <div className="ml-4">
-              <input type="file" accept="image/*" onChange={handleAvatarChange} className="text-xs h-12" />
+              <input
+                id="avatar"
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                className="text-xs h-12"
+              />
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
             <div className="flex flex-col">
-              <label className="text-gray-700 font-semibold mb-2">Name</label>
+              <label htmlFor="name" className="text-gray-700 font-semibold mb-2">Name</label>
               <input
+                id="name"
                 type="text"
                 value={name}
                 placeholder="Enter your name"
@@ -88,8 +118,9 @@ export default function EditProfile() {
               />
             </div>
             <div className="flex flex-col">
-              <label className="text-gray-700 font-semibold mb-2">Email</label>
+              <label htmlFor="email" className="text-gray-700 font-semibold mb-2">Email</label>
               <input
+                id="email"
                 type="email"
                 value={email}
                 placeholder="Enter your email"
@@ -101,8 +132,9 @@ export default function EditProfile() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <div className="flex flex-col">
-            <label className="text-gray-700 font-semibold mb-2">Phone</label>
+            <label htmlFor="phone" className="text-gray-700 font-semibold mb-2">Phone</label>
             <input
+              id="phone"
               type="text"
               value={phone}
               placeholder="Enter your phone number"
@@ -111,8 +143,9 @@ export default function EditProfile() {
             />
           </div>
           <div className="flex flex-col">
-            <label className="text-gray-700 font-semibold mb-2">Address</label>
+            <label htmlFor="address" className="text-gray-700 font-semibold mb-2">Address</label>
             <input
+              id="address"
               type="text"
               value={address}
               placeholder="Enter your address"
@@ -121,8 +154,9 @@ export default function EditProfile() {
             />
           </div>
           <div className="flex flex-col">
-            <label className="text-gray-700 font-semibold mb-2">Description</label>
+            <label htmlFor="description" className="text-gray-700 font-semibold mb-2">Description</label>
             <textarea
+              id="description"
               value={description}
               placeholder="Enter a description"
               onChange={(e) => setDescription(e.target.value)}
@@ -132,9 +166,12 @@ export default function EditProfile() {
         </div>
         <button
           type="submit"
-          className="mt-6 bg-blue-500 text-white px-4 py-2 rounded-lg shadow hover:bg-blue-600 transition duration-300"
+          className={`mt-6 px-4 py-2 rounded-lg shadow transition duration-300 ${
+            isSubmitting ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-500 hover:bg-blue-600 text-white'
+          }`}
+          disabled={isSubmitting}
         >
-          Save Changes
+          {isSubmitting ? 'Saving...' : 'Save Changes'}
         </button>
       </form>
     </div>

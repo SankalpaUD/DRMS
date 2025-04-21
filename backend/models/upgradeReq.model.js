@@ -31,6 +31,10 @@ const upgradeRequestSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  note: {
+    type: String, 
+    trim: true,
+  },
   status: {
     type: String,
     enum: ['pending', 'approved', 'rejected'],

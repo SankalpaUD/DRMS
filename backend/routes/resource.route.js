@@ -39,7 +39,7 @@ router.get('/getFulfillstaffs', verify(['Super Admin', 'Fulfillment Admin']), ge
 router.put('/updateFulfillstaff/:id', verify(['Super Admin', 'Fulfillment Admin']), updateFulfillStaff);
 router.delete('/deleteFulfillstaff/:id', verify(['Super Admin', 'Fulfillment Admin']), deleteFulfillStaff);
 
-router.post('/notices', verify(['Super Admin', 'Resource Admin']), createNotice); // Only Resource Admin and Super admin can create
+router.post('/notices', verify(['Super Admin', 'Resource Admin']), createNotice); 
 router.delete('/notices/:id', verify(['Super Admin', 'Resource Admin']), deleteNotice);
 
 export default router;

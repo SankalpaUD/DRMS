@@ -12,7 +12,6 @@ const AdminResourceRequests = () => {
   const [timeFilter, setTimeFilter] = useState('');
   const [viewAll, setViewAll] = useState(false);
   const [conflictFilter, setConflictFilter] = useState('all');
-  const [conflictingRequests, setConflictingRequests] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -64,19 +63,36 @@ const AdminResourceRequests = () => {
   };
 
   const checkConflicts = (requestsToCheck) => {
-    let conflicts = [];
-    const sortedRequests = [...requestsToCheck].sort((a, b) => new Date(a.requestDate) - new Date(b.requestDate) || a.takenTime.localeCompare(b.takenTime));
+    const conflicts = [];
+    const groupedRequests = {};
 
-    for (let i = 0; i < sortedRequests.length - 1; i++) {
-      for (let j = i + 1; j < sortedRequests.length; j++) {
-        if (sortedRequests[i].requestDate === sortedRequests[j].requestDate && sortedRequests[i].takenTime === sortedRequests[j].takenTime) {
-          conflicts.push(sortedRequests[i]);
-          conflicts.push(sortedRequests[j]);
-        }
+    // Group requests by resource name, date, and time
+    requestsToCheck.forEach((request) => {
+      const key = `${request.resource?.name || 'N/A'}_${new Date(request.requestDate).toLocaleDateString()}_${request.takenTime}`;
+      if (!groupedRequests[key]) {
+        groupedRequests[key] = [];
       }
-    }
+      groupedRequests[key].push(request);
+    });
+
+    // Identify conflicts within each group
+    Object.values(groupedRequests).forEach((group) => {
+      if (group.length > 1) {
+        conflicts.push(...group);
+      }
+    });
 
     return conflicts;
+  };
+
+  const sortByPriority = (requestsToSort) => {
+    const priorityOrder = { staff: 1, student: 2, user: 3 };
+
+    return [...requestsToSort].sort((a, b) => {
+      const priorityA = priorityOrder[a.userRole] || 4; // Default to lowest priority if role is missing
+      const priorityB = priorityOrder[b.userRole] || 4;
+      return priorityA - priorityB;
+    });
   };
 
   const handleViewDetails = (requestId) => {
@@ -99,12 +115,6 @@ const AdminResourceRequests = () => {
       times.push(timeString);
     }
     return times;
-  };
-
-  const checkPriority = () => {
-    const priority = { staff: 1, student: 2, user: 3 };
-    const rankedConflicts = [...filteredRequests].sort((a, b) => priority[a.userRole] - priority[b.userRole]);
-    setFilteredRequests(rankedConflicts);
   };
 
   return (
@@ -145,14 +155,12 @@ const AdminResourceRequests = () => {
         >
           {viewAll ? 'View Upcoming' : 'View All'}
         </button>
-        {conflictFilter === 'conflicts' && (
-          <button
-            onClick={checkPriority}
-            className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Check Priority
-          </button>
-        )}
+        <button
+          onClick={() => setFilteredRequests(sortByPriority(filteredRequests))}
+          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded mr-4"
+        >
+          Check Priority
+        </button>
       </div>
       <table className="min-w-full bg-white border border-gray-300">
         <thead>
@@ -169,7 +177,9 @@ const AdminResourceRequests = () => {
         <tbody>
           {filteredRequests.map(request => (
             <tr key={request._id}>
-              <td className="py-2 px-4 border-b border-gray-300 text-center">{request.user?.name || 'N/A'}</td>
+              <td className="py-2 px-4 border-b border-gray-300 text-center">
+                {request.user?.name ? `${request.user.name} (${request.userRole || 'N/A'})` : 'N/A'}
+              </td>
               <td className="py-2 px-4 border-b border-gray-300 text-center">{request.resource?.name || 'N/A'}</td>
               <td className="py-2 px-4 border-b border-gray-300 text-center">{new Date(request.requestDate).toLocaleDateString()}</td>
               <td className="py-2 px-4 border-b border-gray-300 text-center">{request.takenTime}</td>

@@ -20,7 +20,7 @@ export const AddResource = async (req, res, next) => {
       model,
       quantity,
       timetable,
-      additionalAttributes, // Assuming this is passed as an object or JSON string
+      additionalAttributes, 
     } = req.body;
     // console.log("Received files:", req.files); // Log the received files
     //console.log("Request body:", req.body); 
@@ -111,23 +111,54 @@ export const getResourceById = async (req, res, next) => {
 };
 
 export const getResources = async (req, res, next) => {
-  const { searchTerm, type, availability, resourceType, additionalAttributes } = req.query;
+  const {
+    searchTerm,
+    resourceType,
+    premiType,
+    capacity,
+    isAC,
+    hasWhiteboard,
+    hasProjector,
+    hasDesktopOrLaptop,
+    hasMicrophone,
+    assetType,
+    brand,
+    model,
+    availability,
+    additionalAttributes,
+  } = req.query;
 
   try {
     let query = {};
+
     if (searchTerm) {
-      query.name = { $regex: searchTerm, $options: 'i' }; // Case-insensitive search
+      query.name = { $regex: searchTerm, $options: 'i' };
     }
-    if (type) {
-      query.type = type;
-    }
-    if (availability) {
-      query.availability = availability === 'true';
-    }
+
     if (resourceType) {
       query.resourceType = resourceType;
     }
-    // Handle additionalAttributes if provided
+
+    if (resourceType === 'PremisesResourceType') {
+      if (premiType) query.premiType = premiType;
+      if (capacity) query.capacity = { $gte: parseInt(capacity, 10) };
+      if (isAC) query.isAC = isAC === 'true';
+      if (hasWhiteboard) query.hasWhiteboard = hasWhiteboard === 'true';
+      if (hasProjector) query.hasProjector = hasProjector === 'true';
+      if (hasDesktopOrLaptop) query.hasDesktopOrLaptop = hasDesktopOrLaptop === 'true';
+      if (hasMicrophone) query.hasMicrophone = hasMicrophone === 'true';
+    }
+
+    if (resourceType === 'AssetResourceType') {
+      if (assetType) query.assetType = assetType;
+      if (brand) query.brand = { $regex: brand, $options: 'i' }; 
+      if (model) query.model = { $regex: model, $options: 'i' }; 
+    }
+
+    if (availability) {
+      query.availability = availability === 'true';
+    }
+
     if (additionalAttributes) {
       try {
         const attributes = JSON.parse(additionalAttributes);
@@ -139,9 +170,11 @@ export const getResources = async (req, res, next) => {
       }
     }
 
+    // Fetch resources from the database
     const resources = await Resource.find(query);
     res.status(200).json(resources);
   } catch (error) {
+    console.error('Error in getResources:', error);
     next(error);
   }
 };

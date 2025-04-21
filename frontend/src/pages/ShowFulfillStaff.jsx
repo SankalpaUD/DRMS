@@ -41,7 +41,10 @@ const ShowFulfillStaff = () => {
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-4">Fulfill Staff</h1>
-      <Link to="/add-fulfill-staff" className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block">
+      <Link
+        to="/add-fulfill-staff"
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-4 inline-block"
+      >
         Add Fulfill Staff
       </Link>
       <table className="min-w-full bg-white border border-gray-300">
@@ -64,6 +67,12 @@ const ShowFulfillStaff = () => {
               <td className="py-2 px-4 border-b border-gray-300 text-center">{staffMember.position}</td>
               <td className="py-2 px-4 border-b border-gray-300 text-center">{staffMember.number}</td>
               <td className="py-2 px-4 border-b border-gray-300 text-center">
+              <a
+                href={`mailto:${staffMember.email}?subject=Admin Resource Allocation`}
+                className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-2 rounded mr-2"
+              >
+              Send Mail
+              </a>
                 <button
                   onClick={() => handleEdit(staffMember)}
                   className="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded mr-2"

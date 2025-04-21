@@ -1,15 +1,21 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import axios from 'axios';
+import { logout } from '../redux/user/userSlice';
+import { useNavigate } from 'react-router-dom';
 
 const Setting = () => {
   const { currentUser } = useSelector((state) => state.user);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [activeSection, setActiveSection] = useState('');
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleChangePassword = async (e) => {
     e.preventDefault();
@@ -32,10 +38,39 @@ const Setting = () => {
       if (response.status === 200) {
         setSuccess('Password changed successfully');
         setError('');
+        // Navigate to the profile page after success
+        navigate('/profile');
       }
     } catch (error) {
       setError('Error changing password');
       setSuccess('');
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    const confirmDelete = window.confirm(
+      'Are you sure you want to delete your account? This action is permanent and cannot be undone.'
+    );
+
+    if (!confirmDelete) return;
+
+    setIsDeleting(true);
+
+    try {
+      await axios.delete(`/api/user/delete/${currentUser._id}`, {
+        headers: {
+          Authorization: `Bearer ${currentUser.access_token}`,
+        },
+      });
+
+      // Log the user out and redirect to the home page
+      dispatch(logout());
+      navigate('/');
+    } catch (error) {
+      console.error('Error deleting account:', error);
+      alert('Failed to delete account. Please try again.');
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -50,7 +85,6 @@ const Setting = () => {
           >
             Change Password
           </button>
-          {/* Add more buttons for other operations here */}
         </div>
 
         {activeSection === 'changePassword' && (
@@ -96,7 +130,32 @@ const Setting = () => {
           </form>
         )}
 
-        {/* Add more sections for other operations here */}
+        {activeSection === 'deleteAccount' && (
+          <div className="mt-6">
+            <p className="text-gray-700 mb-4">
+              Deleting your account is permanent and cannot be undone. Are you sure you want to
+              proceed?
+            </p>
+            <button
+              onClick={handleDeleteAccount}
+              className={`bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition duration-300 ${
+                isDeleting ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              disabled={isDeleting}
+            >
+              {isDeleting ? 'Deleting...' : 'Delete Account'}
+            </button>
+          </div>
+        )}
+
+        <div className="mt-6">
+          <button
+            onClick={() => setActiveSection('deleteAccount')}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg shadow hover:bg-red-600 transition duration-300"
+          >
+            Delete Account
+          </button>
+        </div>
       </div>
     </div>
   );
