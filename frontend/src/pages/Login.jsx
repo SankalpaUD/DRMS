@@ -41,6 +41,9 @@ export default function Login() {
       }
     } catch (error) {
       dispatch(loginFailure(error.response?.data?.message || 'Login failed'));
+      setTimeout(() => {
+        dispatch(loginFailure(null)); 
+      }, 2000);
     }
   };
 

@@ -121,7 +121,7 @@ const Sidebar = ({ isOpen }) => {
         >
           <FaCalendarAlt className="mr-2" /> Bookings
         </Link>
-        {currentUser && (currentUser.role === 'Super Admin' || currentUser.role === 'Resource Admin' || currentUser.role === 'user') && (
+        {currentUser && (currentUser.role === 'Super Admin' || currentUser.role === 'Resource Admin' || currentUser.role === 'user' || currentUser.role === 'student' || currentUser.role === 'staff') && (
          
          <Link 
            to="/notices" 

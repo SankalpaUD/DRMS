@@ -27,6 +27,6 @@ router.get('/notifications/:userId', verify(), getNotifications);
 router.put('/notifications/markAsRead/:id', verify(), markAsRead);
 
 //notices routes
-router.get('/notices', verify(['Super Admin', 'Resource Admin', 'user']), getNotices);
+router.get('/notices', verify(), getNotices);
 
 export default router;
